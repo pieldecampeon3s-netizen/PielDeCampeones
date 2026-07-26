@@ -1,0 +1,60 @@
+<h1 class="h2"><%= title %>: <%= producto.nombre %></h1>
+<p class="text-muted">Modifica los detalles del producto seleccionado.</p>
+<hr />
+<div class="row">
+    <div class="col-md-8">
+        <form action="/admin/productos/editar" method="post">
+            <input type="hidden" />
+            <input type="hidden" />
+            <input type="hidden" />
+            <div class="text-danger mb-3"></div>
+
+            <!-- Campos del formulario (idénticos a los de Crear.cshtml) -->
+            <div class="mb-3">
+                <label for="nombre" class="form-label"></label>
+                <input name="nombre" id="nombre" class="form-control" />
+                <span class="text-danger"><%= (errores && errores.nombre) || '' %></span>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="oem" class="form-label">OEM</label>
+                    <input name="oem" id="oem" class="form-control" />
+                    <span class="text-danger"><%= (errores && errores.oem) || '' %></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="idCategoria" class="form-label">Categoría</label>
+                    <select name="idCategoria" id="idCategoria" class="form-select"></select>
+                    <span class="text-danger"><%= (errores && errores.idCategoria) || '' %></span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label for="precio" class="form-label"></label>
+                    <input name="precio" id="precio" class="form-control" type="number" step="0.01" />
+                    <span class="text-danger"><%= (errores && errores.precio) || '' %></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label for="stock" class="form-label"></label>
+                    <input name="stock" id="stock" class="form-control" type="number" />
+                    <span class="text-danger"><%= (errores && errores.stock) || '' %></span>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="descripcion" class="form-label"></label>
+                <textarea name="descripcion" id="descripcion" class="form-control" rows="3"></textarea>
+                <span class="text-danger"><%= (errores && errores.descripcion) || '' %></span>
+            </div>
+            <div class="mb-3">
+                <label for="imagenNombre"></label>
+                <input name="imagenNombre" id="imagenNombre" class="form-control" />
+                <span><%= (errores && errores.imagenNombre) || '' %></span>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a href="/admin/productos" class="btn btn-secondary">Cancelar</a>
+            </div>
+        </form>
+    </div>
+</div>
+

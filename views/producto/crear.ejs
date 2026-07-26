@@ -1,0 +1,69 @@
+<div class="container-fluid mt-4">
+    <h1 class="h2"><%= title %></h1>
+    <p class="text-muted">Rellena los detalles del nuevo repuesto para añadirlo a tu inventario.</p>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card order-details-card p-4">
+                <form action="/admin/productos/crear" method="post">
+                    <div class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label for="nombre" class="form-label"></label>
+                        <input name="nombre" id="nombre" class="form-control" />
+                        <span class="text-danger"><%= (errores && errores.nombre) || '' %></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="oEM" class="form-label"></label>
+                            <input name="oEM" id="oEM" class="form-control" />
+                            <span class="text-danger"><%= (errores && errores.oEM) || '' %></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="idCategoria" class="form-label"></label>
+                            <select name="idCategoria" id="idCategoria" class="form-select">
+                                <option value="">-- Seleccione una categoría --</option>
+                            </select>
+                            <span class="text-danger"><%= (errores && errores.idCategoria) || '' %></span>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="precio" class="form-label"></label>
+                            <input name="precio" id="precio" class="form-control" type="number" step="0.01" />
+                            <span class="text-danger"><%= (errores && errores.precio) || '' %></span>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="stock" class="form-label"></label>
+                            <input name="stock" id="stock" class="form-control" type="number" />
+                            <span class="text-danger"><%= (errores && errores.stock) || '' %></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="descripcion" class="form-label"></label>
+                        <textarea name="descripcion" id="descripcion" class="form-control" rows="3"></textarea>
+                        <span class="text-danger"><%= (errores && errores.descripcion) || '' %></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="imagenUrl" class="form-label"></label>
+                        <input name="imagenUrl" id="imagenUrl" class="form-control" placeholder="Ej: nombre-de-imagen.png" />
+                        <span class="text-danger"><%= (errores && errores.imagenUrl) || '' %></span>
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-primary">Crear Producto</button>
+                        <a href="/admin/productos" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+

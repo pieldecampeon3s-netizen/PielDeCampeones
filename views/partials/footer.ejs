@@ -1,0 +1,143 @@
+<%# Footer del sitio. Se incluye desde layouts/main.ejs, no lo pegues en cada página. %>
+<footer class="footer-dark pt-5 pb-4">
+    <div class="container text-center text-md-start">
+        <div class="row g-4">
+
+            <!-- Información -->
+            <div class="col-lg-4 col-md-6 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="100">
+                <h5 class="text-uppercase mb-4">Piel de Campeón</h5>
+
+                <p>
+                    Somos una tienda especializada en camisetas de fútbol para verdaderos
+                    aficionados. Encuentra los diseños más recientes de clubes y selecciones,
+                    siempre con excelente calidad y envío a toda Colombia.
+                </p>
+
+                <div class="mt-4 social-icons">
+                    <a href="#" class="me-3"><i class="bi bi-facebook"></i></a>
+                    <a href="#" class="me-3"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="me-3"><i class="bi bi-tiktok"></i></a>
+                    <a href="#"><i class="bi bi-whatsapp"></i></a>
+                </div>
+            </div>
+
+            <!-- Navegación -->
+            <div class="col-lg-2 col-md-6 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="200">
+                <h5 class="text-uppercase mb-4">Navegación</h5>
+
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <a href="/">Inicio</a>
+                    </li>
+
+                    <li class="mb-2">
+                        <a href="/catalogo">Catálogo</a>
+                    </li>
+
+                    <li class="mb-2">
+                        <a href="/sobre-nosotros">Nosotros</a>
+                    </li>
+
+                    <li class="mb-2">
+                        <a href="/contactanos">Contacto</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Ayuda -->
+            <div class="col-lg-2 col-md-6 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="300">
+                <h5 class="text-uppercase mb-4">Ayuda</h5>
+
+                <ul class="list-unstyled mb-0">
+                    <li class="mb-2">
+                        <a href="#">Preguntas Frecuentes</a>
+                    </li>
+
+                    <li class="mb-2">
+                        <a href="/privacidad">Política de Privacidad</a>
+                    </li>
+
+                    <li class="mb-2">
+                        <a href="#">Cambios y Devoluciones</a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="col-lg-4 col-md-6 mb-4 mb-md-0" data-aos="fade-up" data-aos-delay="400">
+                <h5 class="text-uppercase mb-4">No te pierdas ningún lanzamiento</h5>
+
+                <p>
+                    Recibe noticias sobre nuevas camisetas, promociones y descuentos exclusivos.
+                </p>
+
+                <form>
+                    <div class="input-group">
+                        <input type="email"
+                               class="form-control"
+                               placeholder="Correo electrónico"
+                               aria-label="Correo electrónico">
+
+                        <button class="btn btn-primary" type="button">
+                            Suscribirme
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+
+        <hr class="border-secondary my-4">
+
+        <div class="text-center text-white-50">
+            <small>
+                © <%= new Date().getFullYear() %> <strong>Piel de Campeón</strong>. Todos los derechos reservados.
+            </small>
+        </div>
+
+    </div>
+</footer>
+
+<style>
+        /* ESTILOS PARA EL NUEVO FOOTER */
+        .footer-dark {
+            background-color: var(--color-fondo-oscuro);
+            color: #adb5bd;
+        }
+
+            .footer-dark h5 {
+                color: #fff;
+                font-weight: 600;
+                margin-bottom: 1.5rem;
+            }
+
+            .footer-dark a {
+                color: #adb5bd;
+                text-decoration: none;
+                transition: color 0.2s ease-in-out;
+            }
+
+                .footer-dark a:hover {
+                    color: #fff;
+                    text-decoration: underline;
+                }
+
+            .footer-dark .social-icons a {
+                font-size: 1.5rem;
+                color: #adb5bd;
+            }
+
+                .footer-dark .social-icons a:hover {
+                    color: var(--color-primario);
+                }
+
+            .footer-dark .input-group .form-control {
+                background-color: #2c2c2e;
+                border-color: #424245;
+                color: #fff;
+            }
+
+                .footer-dark .input-group .form-control::placeholder {
+                    color: #adb5bd;
+                }
+</style>

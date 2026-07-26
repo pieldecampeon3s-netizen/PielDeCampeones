@@ -1,0 +1,56 @@
+<%#
+  Barra de navegación. Sale de Views/Shared/_Layout.cshtml.
+  Usa el local `usuario`: null si no hay sesión, o { nombre, email, esAdmin }.
+%>
+<header>
+    <nav class="navbar navbar-expand-sm navbar-dark border-bottom box-shadow mb-3 fixed-top" style="background-color: var(--color-fondo-oscuro, #121212);">
+        <div class="container-fluid">
+            <a class="navbar-brand logo" href="/">Piel de Campeón</a>
+
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Abrir navegación">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="navbar-collapse collapse d-sm-inline-flex">
+                <div class="ms-auto d-flex align-items-center">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/">Inicio</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/catalogo">Tienda</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/sobre-nosotros">Sobre Nosotros</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light" href="/contactanos">Contáctanos</a>
+                        </li>
+
+                        <% if (typeof usuario !== 'undefined' && usuario) { %>
+                            <% if (usuario.esAdmin) { %>
+                                <li class="nav-item">
+                                    <a class="nav-link text-light" href="/admin">Panel de Admin</a>
+                                </li>
+                            <% } %>
+                            <li class="nav-item">
+                                <form class="nav-link text-light" action="/account/logout" method="post">
+                                    <button type="submit" class="btn btn-link nav-link text-light p-0" style="border: none;">Cerrar Sesión</button>
+                                </form>
+                            </li>
+                        <% } else { %>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" href="/account/login">Iniciar Sesión</a>
+                            </li>
+                        <% } %>
+                    </ul>
+
+                    <a href="/carrito" class="position-relative nav-link text-light ms-3" title="Ver mi carrito">
+                        <i class="bi bi-cart" style="font-size: 1.5rem;"></i>
+                        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>
