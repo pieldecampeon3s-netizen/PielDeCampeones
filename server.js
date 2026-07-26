@@ -26,6 +26,21 @@ app.use(express.static(path.join(__dirname, 'public'), {
     if (filePath.endsWith('.avif')) res.setHeader('Content-Type', 'image/avif');
   },
 }));
+// Librerías servidas desde el propio servidor en lugar de un CDN externo.
+// En redes móviles donde cdn.jsdelivr.net / unpkg.com / fonts.googleapis.com
+// no son alcanzables, la página se quedaba sin Bootstrap: sin menú plegable,
+// sin toasts y con las listas mostrando viñetas. Sirviéndolas desde aquí la
+// tienda no depende de que el cliente alcance servidores de terceros.
+const libreria = (paquete, subcarpeta) =>
+  express.static(path.join(__dirname, 'node_modules', paquete, subcarpeta), {
+    maxAge: '30d', // llevan versión fija en package.json, se pueden cachear
+  });
+
+app.use('/vendor/bootstrap', libreria('bootstrap', 'dist'));
+app.use('/vendor/bootstrap-icons', libreria('bootstrap-icons', 'font'));
+app.use('/vendor/aos', libreria('aos', 'dist'));
+app.use('/vendor/poppins', libreria('@fontsource/poppins', '.'));
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(

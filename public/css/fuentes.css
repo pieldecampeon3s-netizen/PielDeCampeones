@@ -1,0 +1,55 @@
+/*
+  Poppins servida desde el propio servidor (paquete @fontsource/poppins).
+
+  Antes se cargaba desde fonts.googleapis.com. En redes donde ese dominio no
+  es alcanzable la tienda se veía con la tipografía por defecto del sistema.
+
+  Solo se incluye el subconjunto "latin": cubre el español completo, acentos,
+  la ñ y los signos ¿ ¡. El paquete trae también devanagari y latin-ext, que
+  aquí no hacen falta y solo añadirían peso.
+*/
+
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 300;
+    font-display: swap;
+    src: url('/vendor/poppins/files/poppins-latin-300-normal.woff2') format('woff2'),
+         url('/vendor/poppins/files/poppins-latin-300-normal.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: url('/vendor/poppins/files/poppins-latin-400-normal.woff2') format('woff2'),
+         url('/vendor/poppins/files/poppins-latin-400-normal.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
+    src: url('/vendor/poppins/files/poppins-latin-500-normal.woff2') format('woff2'),
+         url('/vendor/poppins/files/poppins-latin-500-normal.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 600;
+    font-display: swap;
+    src: url('/vendor/poppins/files/poppins-latin-600-normal.woff2') format('woff2'),
+         url('/vendor/poppins/files/poppins-latin-600-normal.woff') format('woff');
+}
+
+@font-face {
+    font-family: 'Poppins';
+    font-style: normal;
+    font-weight: 700;
+    font-display: swap;
+    src: url('/vendor/poppins/files/poppins-latin-700-normal.woff2') format('woff2'),
+         url('/vendor/poppins/files/poppins-latin-700-normal.woff') format('woff');
+}

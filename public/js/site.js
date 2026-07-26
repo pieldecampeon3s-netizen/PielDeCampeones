@@ -4,6 +4,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const esMovil = window.matchMedia('(max-width: 767.98px)').matches;
     const menosMovimiento = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+    // Si AOS no cargó, los elementos con data-aos se quedarían invisibles
+    // (su CSS los pone a opacity:0). Los mostramos y salimos sin lanzar error.
+    if (typeof AOS === 'undefined') {
+        document.querySelectorAll('[data-aos]').forEach(el => el.removeAttribute('data-aos'));
+        return;
+    }
+
     // Si el sistema pide reducir movimiento, mostramos todo sin animar.
     if (menosMovimiento) {
         document.querySelectorAll('[data-aos]').forEach(el => el.removeAttribute('data-aos'));
