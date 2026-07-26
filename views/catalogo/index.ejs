@@ -22,7 +22,21 @@
 
         <div class="col-lg-3">
 
-            <aside class="filter-sidebar">
+            <%#
+              En móvil los filtros van plegados. Desplegados ocupan toda la
+              primera pantalla y el usuario no ve ni una camiseta sin hacer
+              scroll. En escritorio (d-lg-block) siguen siempre visibles.
+            %>
+            <button class="btn btn-outline-light w-100 mb-3 d-lg-none"
+                    type="button"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#filtrosCatalogo"
+                    aria-expanded="false"
+                    aria-controls="filtrosCatalogo">
+                <i class="bi bi-sliders me-2"></i>Filtrar y ordenar
+            </button>
+
+            <aside class="filter-sidebar collapse d-lg-block" id="filtrosCatalogo">
 
                 <form action="/catalogo" method="get">
 
@@ -89,7 +103,8 @@
         <div class="col-lg-9">
 
             <% if (productos.length > 0) { %>
-                <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-4">
+                <%# 2 columnas en móvil: es el estándar en catálogos de ropa %>
+                <div class="row row-cols-2 row-cols-md-2 row-cols-xl-3 g-3 g-md-4">
 
                     <% (productos || []).forEach(function (producto) { %>
                         <div class="col">
@@ -134,7 +149,12 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        background: url('/images/store-banner.jpg') center center/cover no-repeat;
+        background-color: #121212;
+        /* Reutiliza la foto de la portada. Antes apuntaba a store-banner.jpg,
+           que no existe: la cabecera se veía como un rectángulo negro. */
+        background: url('/images/futbol-1280.webp') center center/cover no-repeat;
+        background-image: image-set(url('/images/futbol-1280.webp') type('image/webp'),
+                                    url('/images/futbol.jpg') type('image/jpeg'));
     }
 
     .store-overlay {

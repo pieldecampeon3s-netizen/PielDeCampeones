@@ -3,15 +3,26 @@
   Usa el local `usuario`: null si no hay sesión, o { nombre, email, esAdmin }.
 %>
 <header>
-    <nav class="navbar navbar-expand-sm navbar-dark border-bottom box-shadow mb-3 fixed-top" style="background-color: var(--color-fondo-oscuro, #121212);">
+    <nav class="navbar navbar-expand-lg navbar-dark border-bottom box-shadow fixed-top" style="background-color: var(--color-fondo-oscuro, #121212);">
         <div class="container-fluid">
             <a class="navbar-brand logo" href="/">Piel de Campeón</a>
 
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Abrir navegación">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+            <%#
+              Carrito y botón de menú van juntos y FUERA del collapse: en una tienda
+              el carrito tiene que verse siempre, no escondido tras el menú.
+            %>
+            <div class="d-flex align-items-center gap-1 order-lg-last">
+                <a href="/carrito" class="nav-cart position-relative" aria-label="Ver mi carrito">
+                    <i class="bi bi-cart"></i>
+                    <span id="cart-badge" class="position-absolute badge rounded-pill bg-danger">0</span>
+                </a>
 
-            <div class="navbar-collapse collapse d-sm-inline-flex">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Abrir navegación">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+            </div>
+
+            <div class="navbar-collapse collapse">
                 <div class="ms-auto d-flex align-items-center">
                     <ul class="navbar-nav flex-grow-1">
                         <li class="nav-item">
@@ -44,11 +55,6 @@
                             </li>
                         <% } %>
                     </ul>
-
-                    <a href="/carrito" class="position-relative nav-link text-light ms-3" title="Ver mi carrito">
-                        <i class="bi bi-cart" style="font-size: 1.5rem;"></i>
-                        <span id="cart-badge" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
-                    </a>
                 </div>
             </div>
         </div>

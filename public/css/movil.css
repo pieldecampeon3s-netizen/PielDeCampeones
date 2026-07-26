@@ -1,0 +1,385 @@
+/*
+  Ajustes para móvil. Se carga DESPUÉS de site.css para poder sobreescribirlo.
+
+  El sitio se diseñó en escritorio y no tenía ni una sola @media, así que aquí
+  vive todo lo que corrige la experiencia en teléfono. Si añades reglas nuevas,
+  mantenlas agrupadas por tema como están abajo.
+
+  IMPORTANTE — por qué casi todo va prefijado con `body`:
+  cada vista trae su propio bloque <style> dentro del <body>, que el navegador
+  lee DESPUÉS de este archivo. Con la misma especificidad gana el último, así
+  que un `.store-hero` de aquí perdería contra el `.store-hero` de la vista.
+  El prefijo `body` sube la especificidad lo justo para ganar sin recurrir a
+  !important. Si mueves esos <style> a archivos .css enlazados en el <head>,
+  el prefijo deja de hacer falta.
+*/
+
+/* ==========================================================================
+   1. Desbordamiento horizontal
+   Las animaciones AOS "fade-left"/"fade-right" desplazan los elementos 100px
+   en horizontal antes de dispararse, y eso hacía scroll lateral en móvil.
+   En site.js ya se convierten a "fade-up" en pantallas pequeñas; esto es la
+   red de seguridad para cualquier otra que se añada más adelante.
+   ========================================================================== */
+html,
+body {
+    overflow-x: hidden;
+    /* evita que el navegador infle el texto por su cuenta al girar el móvil */
+    -webkit-text-size-adjust: 100%;
+}
+
+/* ==========================================================================
+   2. Barra de navegación
+   ========================================================================== */
+
+/* Carrito: visible siempre, con área táctil de 44px (mínimo recomendado). */
+body .nav-cart {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    color: var(--color-texto-principal, #f5f5f7);
+    font-size: 1.4rem;
+    border-radius: 8px;
+}
+
+body .nav-cart:hover,
+body .nav-cart:focus {
+    color: var(--color-primario, #d90429);
+}
+
+body .nav-cart #cart-badge {
+    top: 4px;
+    right: 2px;
+    font-size: 0.68rem;
+    padding: 0.25em 0.5em;
+}
+
+/* El botón de menú de Bootstrap ronda los 38px: lo subimos a 44px. */
+body .navbar-toggler {
+    width: 44px;
+    height: 44px;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+body .navbar-toggler:focus {
+    box-shadow: 0 0 0 3px rgba(217, 4, 41, 0.4);
+}
+
+@media (max-width: 991.98px) {
+    /* Menú desplegado: cada enlace como fila cómoda de tocar, no texto apretado. */
+    body .navbar-collapse {
+        padding-top: 0.5rem;
+        padding-bottom: 0.5rem;
+    }
+
+    body .navbar-collapse .navbar-nav .nav-link {
+        padding: 0.85rem 0.25rem;
+        font-size: 1.05rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    body .navbar-collapse .navbar-nav .nav-item:last-child .nav-link {
+        border-bottom: none;
+    }
+
+    body .navbar-collapse .ms-auto,
+    body .navbar-collapse .navbar-nav {
+        width: 100%;
+    }
+}
+
+/* ==========================================================================
+   3. Portada (hero)
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    body .hero-search-section {
+        /* 90vh se cortaba con la barra del navegador. svh = viewport realmente
+           visible. El min-height deja crecer la sección si el texto lo necesita.
+           El layout ya reserva 70px arriba por la navbar fija, así que el
+           padding superior es pequeño para no dejar un hueco doble. */
+        height: auto;
+        min-height: 78svh;
+        padding: 2rem 1.25rem 2.5rem;
+    }
+
+    /* Tipografía fluida: crece con la pantalla en vez de saltar por breakpoints. */
+    body .hero-content h1 {
+        font-size: clamp(2.4rem, 11vw, 3.4rem);
+        line-height: 1.08;
+        letter-spacing: -0.02em;
+        margin-bottom: 0.5rem;
+    }
+
+    body .hero-content h2 {
+        font-size: clamp(1.2rem, 5.5vw, 1.7rem);
+        margin-bottom: 1rem;
+    }
+
+    body .hero-content .lead {
+        font-size: 1rem;
+        line-height: 1.55;
+        margin-bottom: 2rem;
+    }
+
+    body .hero-content .badge {
+        font-size: 0.72rem;
+        letter-spacing: 0.04em;
+    }
+
+    /* Botones a lo ancho y apilados: el pulgar acierta siempre. */
+    body .hero-content .btn {
+        width: 100%;
+        padding: 0.9rem 1rem;
+        font-size: 1.05rem;
+    }
+
+    body .hero-content .d-flex.gap-3 {
+        flex-direction: column;
+        gap: 0.75rem;
+        max-width: 380px;
+        margin-inline: auto;
+    }
+
+    /* La foto es apaisada; en pantalla vertical conviene encuadrar un poco
+       más arriba para que se vean las camisetas y no solo la tela. */
+    body .hero-image {
+        object-position: 60% 40%;
+    }
+
+    /* Degradado más marcado abajo: el texto blanco necesita contraste real. */
+    body .video-overlay {
+        background: linear-gradient(to top, rgba(0, 0, 0, 0.82) 10%, rgba(0, 0, 0, 0.4) 60%, rgba(0, 0, 0, 0.25) 100%);
+    }
+}
+
+/* ==========================================================================
+   4. Ritmo vertical de las secciones
+   En móvil el py-5 + my-5 de Bootstrap se acumula y deja huecos enormes que
+   obligan a hacer scroll sin ver nada.
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    body section.py-5,
+    body .section-promise-pro .container.py-5,
+    body .brands-section .container.my-5.py-5 {
+        padding-top: 2.5rem;
+        padding-bottom: 2.5rem;
+    }
+
+    body .container.my-5 {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    body .section-title,
+    body .section-title-dark {
+        margin-bottom: 2rem;
+        font-size: clamp(1.6rem, 7vw, 2.1rem);
+    }
+
+    body .section-final-cta h2,
+    body .section-promise-pro h2 {
+        font-size: clamp(1.6rem, 7vw, 2.1rem);
+    }
+
+    /* Los .mb-5 de las cabeceras de sección sobran en pantalla pequeña. */
+    body .row.justify-content-center.mb-5,
+    body .header-section.mb-5 {
+        margin-bottom: 2rem;
+    }
+}
+
+/* ==========================================================================
+   5. Tarjetas de producto
+   Para ropa la foto manda: un contenedor de 140px de alto era demasiado bajo.
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    body .product-card-image-container {
+        height: auto;
+        aspect-ratio: 3 / 4; /* proporción habitual en catálogos de ropa */
+        padding: 0;
+        margin-bottom: 0.75rem;
+        overflow: hidden;
+        border-radius: 10px;
+    }
+
+    /* La caja blanca con padding venía del proyecto de repuestos, donde las
+       fotos eran de fondo blanco. Con fotos reales de camisetas la prenda
+       quedaba pequeña y flotando en el centro. Aquí llena la baldosa entera. */
+    body .product-card-image-container,
+    body .product-card-image-container a {
+        display: block;
+    }
+
+    body .product-card-image-container img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+}
+
+@media (max-width: 575.98px) {
+    /* Dos columnas: es el estándar en tiendas de ropa y permite comparar
+       prendas sin scroll infinito. Los textos se ajustan al ancho menor. */
+    body .product-card-body {
+        padding: 0.75rem;
+    }
+
+    body .product-card-footer {
+        padding: 0 0.75rem 0.75rem;
+    }
+
+    body .product-name {
+        font-size: 0.95rem;
+        min-height: 2.8em;
+    }
+
+    /* El enlace ocupa todo el alto del título: así el nombre también es una
+       zona cómoda de tocar, no solo la línea de texto. */
+    body .product-name a {
+        display: block;
+        width: 100%;
+    }
+
+    body .product-price {
+        font-size: 1.1rem;
+    }
+
+    body .product-oem {
+        font-size: 0.7rem;
+    }
+
+    /* A dos columnas el botón queda estrecho y "Añadir al Carrito" se partía en
+       dos líneas. Sin el icono y con la fuente algo menor entra en una sola. */
+    body .btn-brand-accent {
+        padding: 0.75rem 0.4rem;
+        font-size: 0.82rem;
+        white-space: nowrap;
+    }
+
+    body .btn-brand-accent .bi {
+        display: none;
+    }
+}
+
+/* ==========================================================================
+   6. Pie de página
+   Los enlaces medían 23px de alto: imposibles de acertar con el dedo.
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    body .footer-dark ul li {
+        margin-bottom: 0;
+    }
+
+    body .footer-dark ul li a {
+        display: block;
+        padding: 0.7rem 0;
+        min-height: 44px;
+    }
+
+    body .footer-dark .social-icons {
+        display: flex;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    body .footer-dark .social-icons a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 44px;
+        height: 44px;
+        margin-right: 0;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.06);
+    }
+
+    /* Formulario de suscripción: campo y botón apilados y grandes. */
+    body .footer-dark .input-group {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    body .footer-dark .input-group > .form-control,
+    body .footer-dark .input-group > .btn {
+        width: 100%;
+        border-radius: 8px;
+        min-height: 48px;
+    }
+}
+
+/* ==========================================================================
+   7. Formularios
+   Un input con font-size < 16px hace que iOS haga zoom automático al tocarlo
+   y descoloque toda la página.
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    body input,
+    body select,
+    body textarea,
+    body .form-control,
+    body .form-select {
+        font-size: 16px;
+        min-height: 48px;
+    }
+
+    body .btn {
+        min-height: 44px;
+    }
+}
+
+/* ==========================================================================
+   8. Catálogo, guía de tallas y marcas
+   ========================================================================== */
+@media (max-width: 767.98px) {
+    /* Cabecera del catálogo: 380px de alto se comían la primera pantalla. */
+    body .store-hero {
+        height: 220px;
+    }
+
+    body .store-hero h1 {
+        font-size: clamp(1.9rem, 9vw, 2.6rem);
+    }
+
+    body .store-hero .lead {
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+
+    body .size-chart-wrapper {
+        padding: 12px;
+        border-radius: 14px;
+    }
+
+    body .location-section .row {
+        --bs-gutter-y: 2rem;
+    }
+
+    body .brand-card img {
+        max-width: 110px;
+    }
+}
+
+/* ==========================================================================
+   9. Accesibilidad: respetar "reducir movimiento" del sistema
+   ========================================================================== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    [data-aos] {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
