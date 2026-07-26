@@ -1,8 +1,25 @@
 <section class="hero-search-section">
     <div class="video-background-container">
-        <img src="/images/futbol.jpg"
-             alt="Hero Fútbol"
-             class="hero-image">
+        <picture>
+            <source type="image/avif"
+                    sizes="100vw"
+                    srcset="/images/futbol-768.avif   768w,
+                            /images/futbol-1280.avif 1280w,
+                            /images/futbol-1920.avif 1920w,
+                            /images/futbol-2560.avif 2560w">
+            <source type="image/webp"
+                    sizes="100vw"
+                    srcset="/images/futbol-768.webp   768w,
+                            /images/futbol-1280.webp 1280w,
+                            /images/futbol-1920.webp 1920w,
+                            /images/futbol-2560.webp 2560w">
+            <img src="/images/futbol.jpg"
+                 alt="Camisetas de fútbol negras exhibidas en una tienda"
+                 class="hero-image"
+                 width="2560" height="1440"
+                 fetchpriority="high"
+                 decoding="async">
+        </picture>
 
         <div class="video-overlay"></div>
     </div>
@@ -489,9 +506,22 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('/images/tallercarros.png');
-            background-size: cover;
-            background-position: center;
+            background-color: #121212;
+        }
+
+            /* <picture> es inline por defecto: sin esto no llena el contenedor */
+            .video-background-container picture {
+                display: block;
+                width: 100%;
+                height: 100%;
+            }
+
+        .hero-image {
+            display: block;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
         }
 
         .video-overlay {

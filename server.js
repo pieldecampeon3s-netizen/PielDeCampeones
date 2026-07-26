@@ -19,7 +19,13 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
 app.set('layout', 'layouts/main');
 
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), {
+  // El mime-types de esta version de Express no reconoce .avif y lo sirve
+  // como application/octet-stream.
+  setHeaders(res, filePath) {
+    if (filePath.endsWith('.avif')) res.setHeader('Content-Type', 'image/avif');
+  },
+}));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(
