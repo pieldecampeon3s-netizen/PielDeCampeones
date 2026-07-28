@@ -1,0 +1,51 @@
+<%#
+  Lista de favoritos. Reutiliza la misma tarjeta que el catálogo, así que el
+  corazón funciona igual aquí: al quitarlo, el producto desaparece al recargar.
+
+  Espera: productos, favoritos, formatCOP
+%>
+<div class="container py-4 py-lg-5">
+
+    <div class="cabecera-favoritos">
+        <h1>
+            <i class="bi bi-heart-fill"></i>
+            Mis favoritos
+        </h1>
+        <p><%= productos.length %> <%= productos.length === 1 ? 'camiseta guardada' : 'camisetas guardadas' %></p>
+    </div>
+
+    <% if (productos.length) { %>
+        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 g-md-4">
+            <% productos.forEach(function (producto) { %>
+                <div class="col">
+                    <%- include('../partials/product-card', { producto: producto }) %>
+                </div>
+            <% }); %>
+        </div>
+    <% } else { %>
+        <div class="sin-resultados">
+            <i class="bi bi-heart"></i>
+
+            <h3>Aún no has guardado nada</h3>
+
+            <p>
+                Toca el corazón de cualquier camiseta para guardarla aquí
+                y encontrarla rápido más adelante.
+            </p>
+
+            <a href="/" class="btn btn-brand-accent">
+                Ver la tienda
+            </a>
+        </div>
+    <% } %>
+</div>
+
+<%# Los favoritos viven en la sesión: conviene decirlo, no descubrirlo al perderlos. %>
+<% if (productos.length) { %>
+    <div class="container">
+        <p class="aviso-favoritos">
+            <i class="bi bi-info-circle"></i>
+            Se guardan en este navegador. Crea una cuenta para conservarlos siempre.
+        </p>
+    </div>
+<% } %>

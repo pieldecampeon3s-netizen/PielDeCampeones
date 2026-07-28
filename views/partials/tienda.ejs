@@ -1,0 +1,205 @@
+<%#
+  Marcado de la tienda: carrusel, barra de control, panel de filtros y rejilla.
+
+  Vive en un parcial porque se usa en dos sitios: la portada (/) y, si algún
+  día se quiere de nuevo por separado, /catalogo.
+
+  Espera: productos, filtros, rango, fichas, hayFiltros, conteos,
+  etiquetasOrden, filtrosActivos, todasLasCategorias, formatCOP
+%>
+<%#
+  Cabecera en carrusel. Tres mensajes rotando: colección nueva, retro y
+  selecciones. Se pausa al pasar el ratón y respeta "reducir movimiento".
+%>
+<div id="carruselTienda" class="carousel slide store-hero" data-bs-ride="carousel" data-bs-interval="6000">
+
+    <div class="carousel-inner">
+        <% const diapositivas = [
+            {
+                imagen: '/images/futbol-1280.webp',
+                respaldo: '/images/futbol.jpg',
+                etiqueta: 'NUEVA COLECCIÓN',
+                titulo: 'Tienda',
+                destacado: 'Oficial',
+                texto: 'Descubre camisetas oficiales, retro y de edición especial de los mejores clubes y selecciones del mundo.',
+                enlace: '/catalogo',
+                boton: 'Ver colección',
+            },
+            {
+                imagen: '/images/madridretro.jpeg',
+                respaldo: '/images/madridretro.jpeg',
+                etiqueta: 'EDICIONES CLÁSICAS',
+                titulo: 'Camisetas',
+                destacado: 'Retro',
+                texto: 'Las camisetas que marcaron época, con los mismos colores y escudos de siempre.',
+                enlace: '/catalogo?categoria=Retro',
+                boton: 'Ver retro',
+            },
+            {
+                imagen: '/images/ColombiaR.jpeg',
+                respaldo: '/images/ColombiaR.jpeg',
+                etiqueta: 'SELECCIONES',
+                titulo: 'Viste tu',
+                destacado: 'Bandera',
+                texto: 'Camisetas de selecciones nacionales para vivir cada partido con los tuyos.',
+                enlace: '/catalogo?categoria=Selecciones',
+                boton: 'Ver selecciones',
+            },
+        ]; %>
+
+        <% diapositivas.forEach(function (d, i) { %>
+            <div class="carousel-item <%= i === 0 ? 'active' : '' %>">
+                <img src="<%= d.imagen %>"
+                     alt=""
+                     class="store-hero-img"
+                     onerror="this.onerror=null;this.src='<%= d.respaldo %>';"
+                     <%= i === 0 ? 'fetchpriority="high"' : 'loading="lazy"' %>>
+
+                <div class="store-overlay"></div>
+
+                <div class="container store-hero-contenido">
+                    <span class="etiqueta-coleccion">
+                        <i class="bi bi-dribbble"></i> <%= d.etiqueta %>
+                    </span>
+
+                    <h1><%= d.titulo %> <span><%= d.destacado %></span></h1>
+
+                    <p><%= d.texto %></p>
+
+                    <a href="<%= d.enlace %>" class="btn-ver-coleccion">
+                        <%= d.boton %> <i class="bi bi-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        <% }); %>
+    </div>
+
+    <div class="carousel-indicators">
+        <% diapositivas.forEach(function (d, i) { %>
+            <button type="button"
+                    data-bs-target="#carruselTienda"
+                    data-bs-slide-to="<%= i %>"
+                    class="<%= i === 0 ? 'active' : '' %>"
+                    aria-label="Ir a la diapositiva <%= i + 1 %>"
+                    <%= i === 0 ? 'aria-current="true"' : '' %>></button>
+        <% }); %>
+    </div>
+</div>
+
+<div class="container py-4 py-lg-5">
+    <div class="row g-4">
+
+        <div class="col-lg-3">
+            <%- include('../partials/catalogo-filtros', {
+                categorias: todasLasCategorias,
+                conteos,
+                filtros,
+                rango,
+                formatCOP,
+                totalResultados: productos.length,
+            }) %>
+        </div>
+
+        <div class="col-lg-9">
+
+            <%#
+              Barra de control. En móvil se queda pegada arriba al hacer scroll:
+              el usuario siempre tiene a mano el botón de filtros y ve cuántos
+              resultados hay sin volver al principio de la lista.
+            %>
+            <%#
+              Dos pastillas: filtros con el recuento a la izquierda y orden a la
+              derecha, como en el diseño. En móvil la de la izquierda abre el
+              panel; en escritorio el panel ya está a la vista, así que solo
+              informa del número de resultados.
+            %>
+            <div class="barra-catalogo">
+
+                <button type="button"
+                        class="pastilla-filtros"
+                        data-bs-toggle="offcanvas"
+                        data-bs-target="#panelFiltros"
+                        aria-controls="panelFiltros">
+                    <span class="pastilla-icono">
+                        <i class="bi bi-sliders"></i>
+                        <span class="contador-filtros <%= filtrosActivos ? '' : 'd-none' %>"
+                              data-contador-filtros><%= filtrosActivos %></span>
+                    </span>
+
+                    <span class="conteo-resultados" aria-live="polite">
+                        <strong data-contador-resultados><%= productos.length %></strong>
+                        <span data-etiqueta-resultados><%= productos.length === 1 ? 'camiseta' : 'camisetas' %></span>
+                    </span>
+                </button>
+
+                <div class="selector-orden">
+                    <label class="visually-hidden" for="selectorOrden">Ordenar por</label>
+                    <i class="bi bi-arrow-down-up"></i>
+                    <select id="selectorOrden" class="form-select">
+                        <% Object.entries(etiquetasOrden).forEach(function ([valor, etiqueta]) { %>
+                            <option value="<%= valor %>" <%= filtros.orden === valor ? 'selected' : '' %>>
+                                <%= etiqueta %>
+                            </option>
+                        <% }); %>
+                    </select>
+                </div>
+            </div>
+
+            <%#
+              aria-live="polite" hace que un lector de pantalla anuncie el nuevo
+              número de resultados al filtrar, en vez de cambiar en silencio.
+            %>
+            <div id="resultadosCatalogo" aria-live="polite" aria-busy="false">
+                <%- include('../partials/catalogo-resultados', {
+                    productos,
+                    fichas,
+                    hayFiltros,
+                    formatCOP,
+                }) %>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<%#
+  Hoja para elegir talla sin salir del catálogo. Se rellena desde catalogo.js
+  con los datos del botón que la abre, así que basta una sola en la página.
+%>
+<div class="offcanvas offcanvas-bottom hoja-tallas"
+     tabindex="-1"
+     id="hojaTallas"
+     aria-labelledby="tituloHojaTallas">
+
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title" id="tituloHojaTallas">Elige tu talla</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="offcanvas-body">
+        <div class="producto-elegido">
+            <img src="" alt="" id="hojaImagen">
+            <div>
+                <strong id="hojaNombre"></strong>
+                <span id="hojaPrecio"></span>
+            </div>
+        </div>
+
+        <div class="tallas-cabecera">
+            <span class="form-label mb-0">Talla</span>
+            <a href="/images/tabla-tallas.png" target="_blank" class="enlace-guia-tallas">
+                <i class="bi bi-rulers"></i> Guía de tallas
+            </a>
+        </div>
+
+        <div class="tallas-opciones" id="hojaTallasOpciones" role="radiogroup" aria-label="Elige tu talla"></div>
+
+        <p class="talla-aviso" id="hojaAviso" hidden>
+            <i class="bi bi-exclamation-circle"></i> Elige una talla para continuar.
+        </p>
+
+        <button type="button" class="btn btn-danger w-100 mt-4" id="hojaConfirmar">
+            <i class="bi bi-cart-plus me-2"></i>Añadir al carrito
+        </button>
+    </div>
+</div>

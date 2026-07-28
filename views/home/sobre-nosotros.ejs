@@ -56,7 +56,7 @@
                     <img src="/images/Logo_piel.jpeg"
                          class="img-fluid"
                          alt="Logo Piel de Campeón"
-                         onerror="this.onerror=null;this.src='https://placehold.co/600x400/111827/FFFFFF?text=Piel+de+Campeón';">
+                         onerror="this.onerror=null;this.src='/images/placeholder.png';">
 
                 </div>
             </div>
@@ -205,7 +205,7 @@
             <img src="/images/estadio.jpg"
                  class="img-fluid rounded shadow"
                  alt="Compromiso Piel de Campeón"
-                 onerror="this.onerror=null;this.src='https://placehold.co/700x500/111111/FFFFFF?text=Piel+de+Campeón';">
+                 onerror="this.onerror=null;this.src='/images/placeholder.png';">
 
         </div>
 
@@ -249,7 +249,7 @@
                 display: block;
                 width: 70px;
                 height: 4px;
-                background-color: var(--color-primario, #d90429);
+                background-color: var(--color-primario, #d9b04a);
                 margin: 10px auto 0;
             }
 
@@ -313,7 +313,12 @@
             align-items: center;
             justify-content: center;
             /* Elige una imagen que represente la filosofía de tu empresa */
-            background-image: url('https://images.unsplash.com/photo-1541899425853-475c933b584d?q=80&w=1974&auto=format&fit=crop');
+            /* Antes venía de images.unsplash.com: la foto ya no existe (404) y era una
+               petición externa que falla en redes sin acceso a terceros.
+               Se usa la de la tienda: JPG para navegadores antiguos y WebP debajo. */
+            background-image: url('/images/futbol.jpg');
+            background-image: image-set(url('/images/futbol-1280.webp') type('image/webp'),
+                                        url('/images/futbol.jpg') type('image/jpeg'));
             background-size: cover;
             background-position: center;
             background-attachment: fixed; /* Efecto Parallax */
@@ -381,7 +386,7 @@
                 left: 0;
                 width: 60px;
                 height: 4px;
-                background-color: var(--color-primario, #d90429);
+                background-color: var(--color-primario, #d9b04a);
                 border-radius: 2px;
             }
 
@@ -414,7 +419,7 @@
             padding: 80px 0;
             color: #ffffff;
             /* Textura sutil de fibra de carbono */
-            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.02) 0 2px, transparent 2px 4px);
             background-color: #1a1a1a;
             background-repeat: repeat;
             background-attachment: scroll;
@@ -463,8 +468,8 @@
             .philosophy-card-dark .card-icon {
                 font-size: 3rem;
                 /* El acento de color ahora está en el ícono para máximo impacto */
-                color: var(--color-primario, #d90429);
-                text-shadow: 0 0 20px rgba(217, 4, 41, 0.5);
+                color: var(--color-primario, #d9b04a);
+                text-shadow: 0 0 20px rgba(217, 176, 74, 0.5);
                 margin-bottom: 1.25rem;
             }
 
@@ -489,7 +494,7 @@
             position: relative;
             padding: 80px 0;
             /* Textura sutil de fibra de carbono */
-            background-image: url('https://www.transparenttextures.com/patterns/carbon-fibre.png');
+            background-image: repeating-linear-gradient(45deg, rgba(255,255,255,.02) 0 2px, transparent 2px 4px);
             background-color: #1a1a1a;
             background-repeat: repeat;
             background-attachment: scroll;
@@ -533,7 +538,7 @@
             .team-card-dark:hover {
                 transform: translateY(-10px);
                 box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
-                border-color: rgba(217, 4, 41, 0.5);
+                border-color: rgba(217, 176, 74, 0.5);
             }
 
             /* Wrapper de la Imagen para el efecto "flotante" */
@@ -574,7 +579,7 @@
             .team-card-dark .card-subtitle {
                 font-size: 1rem;
                 font-weight: 500;
-                color: var(--color-primario, #d90429);
+                color: var(--color-primario, #d9b04a);
                 margin-bottom: 1rem;
             }
 
@@ -599,7 +604,7 @@
             }
 
                 .team-card-dark .social-link:hover {
-                    color: var(--color-primario, #d90429);
+                    color: var(--color-primario, #d9b04a);
                     transform: translateY(-3px);
                 }
         /* =======================================================
@@ -643,7 +648,7 @@
             }
 
                 .footer-pro .social-link:hover {
-                    color: var(--color-primario, #d90429); /* El color de tu marca */
+                    color: var(--color-primario, #d9b04a); /* El color de tu marca */
                     transform: translateY(-3px);
                 }
 
@@ -658,8 +663,8 @@
                 .footer-pro .form-control:focus {
                     background-color: #2c2c2e;
                     color: #ffffff;
-                    border-color: var(--color-primario, #d90429);
-                    box-shadow: 0 0 0 0.25rem rgba(217, 4, 41, 0.25);
+                    border-color: var(--color-primario, #d9b04a);
+                    box-shadow: 0 0 0 0.25rem rgba(217, 176, 74, 0.25);
                 }
 
                 .footer-pro .form-control::placeholder {
@@ -677,7 +682,7 @@
 
         /* Botón de la marca, si no lo has definido globalmente */
         .btn-brand-red {
-            background-color: var(--color-primario, #d90429);
+            background-color: var(--color-primario, #d9b04a);
             color: #ffffff;
             border: none;
             font-weight: 500;

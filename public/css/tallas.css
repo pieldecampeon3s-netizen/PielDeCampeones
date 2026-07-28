@@ -1,0 +1,120 @@
+/*
+  Selector de talla. Se usa en dos sitios con fondos distintos: el panel claro
+  de la ficha de producto y la hoja oscura del catálogo. Por eso los colores
+  son relativos (transparente + `inherit`) en vez de fijos: la pastilla toma
+  el color del texto de su contenedor y funciona sobre cualquiera de los dos.
+*/
+
+.tallas-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: .6rem;
+}
+
+.enlace-guia-tallas {
+    display: inline-flex;
+    align-items: center;
+    gap: .35rem;
+    min-height: 44px;
+    font-size: .85rem;
+    color: var(--color-primario, #d9b04a);
+}
+
+.enlace-guia-tallas:hover {
+    filter: brightness(1.2);
+}
+
+.tallas-opciones {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+}
+
+/* El radio real se oculta a la vista pero sigue existiendo para el teclado y
+   los lectores de pantalla: la etiqueta es lo que se ve y se toca. */
+.talla-radio {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
+.talla-opcion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 54px;
+    min-height: 48px;
+    padding: 0 .9rem;
+    border: 1.5px solid rgba(128, 128, 128, .45);
+    border-radius: 10px;
+    background: transparent;
+    color: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color .2s ease, background .2s ease, color .2s ease;
+}
+
+.talla-opcion:hover {
+    border-color: currentColor;
+}
+
+.talla-radio:checked + .talla-opcion {
+    background: var(--color-primario, #d9b04a);
+    border-color: var(--color-primario, #d9b04a);
+    color: #fff;
+}
+
+.talla-radio:focus-visible + .talla-opcion {
+    box-shadow: 0 0 0 3px rgba(217, 176, 74, .4);
+}
+
+.talla-aviso {
+    margin: .6rem 0 0;
+    font-size: .85rem;
+    color: #d9b04a;
+    font-weight: 600;
+}
+
+/* --- Hoja rápida de tallas del catálogo (siempre sobre fondo oscuro) --- */
+.hoja-tallas {
+    background: #181818;
+    color: #fff;
+}
+
+.hoja-tallas .offcanvas-header {
+    border-bottom: 1px solid rgba(255, 255, 255, .1);
+}
+
+.hoja-tallas .producto-elegido {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    margin-bottom: 1.25rem;
+}
+
+.hoja-tallas .producto-elegido img {
+    width: 56px;
+    height: 66px;
+    object-fit: cover;
+    border-radius: 8px;
+    background: #fff;
+}
+
+.hoja-tallas .producto-elegido strong {
+    display: block;
+    font-size: .95rem;
+}
+
+.hoja-tallas .producto-elegido span {
+    color: #ff4d6d;
+    font-weight: 700;
+}
+
+.hoja-tallas .talla-aviso {
+    color: #ff7b7b;
+}

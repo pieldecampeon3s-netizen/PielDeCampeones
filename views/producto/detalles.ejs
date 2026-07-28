@@ -10,8 +10,8 @@
             <div class="product-details-panel">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="/">Inicio</a></li>
-                        <li class="breadcrumb-item"><a href="/catalogo">Catálogo</a></li>
+                        <%# Inicio y la tienda son la misma página: una sola miga. %>
+                        <li class="breadcrumb-item"><a href="/">Tienda</a></li>
                         <li class="breadcrumb-item active" aria-current="page"><%= producto.nombre %></li>
                     </ol>
                 </nav>
@@ -30,14 +30,44 @@
                 <p class="product-description-detail"><%= producto.descripcion %></p>
 
                 <form id="form-add-to-cart" data-product-id="<%= producto.id %>" class="purchase-form mt-4">
+
+                    <% if ((producto.tallas || []).length) { %>
+                        <div class="selector-tallas mb-4">
+                            <div class="tallas-cabecera">
+                                <span class="form-label mb-0">Talla:</span>
+                                <a href="/images/tabla-tallas.png" target="_blank" class="enlace-guia-tallas">
+                                    <i class="bi bi-rulers"></i> Guía de tallas
+                                </a>
+                            </div>
+
+                            <div class="tallas-opciones" role="radiogroup" aria-label="Elige tu talla">
+                                <% producto.tallas.forEach(function (talla) { %>
+                                    <input type="radio"
+                                           class="talla-radio"
+                                           name="talla"
+                                           id="talla-<%= talla %>"
+                                           value="<%= talla %>">
+                                    <label class="talla-opcion" for="talla-<%= talla %>"><%= talla %></label>
+                                <% }); %>
+                            </div>
+
+                            <p class="talla-aviso" id="avisoTalla" hidden>
+                                <i class="bi bi-exclamation-circle"></i> Elige una talla para continuar.
+                            </p>
+                        </div>
+                    <% } %>
+
                     <div class="row align-items-center">
                         <div class="col-md-4">
                             <label for="quantity" class="form-label">Cantidad:</label>
                             <input type="number" id="quantity" class="form-control quantity-input" value="1" min="1" max="<%= producto.stock %>">
                         </div>
                         <div class="col-md-8">
-                            <button type="submit" class="btn btn-brand-accent btn-lg w-100 mt-3 mt-md-0">
-                                <i class="bi bi-cart-plus-fill me-2"></i>Agregar al Carrito
+                            <button type="submit"
+                                    class="btn btn-brand-accent btn-lg w-100 mt-3 mt-md-0"
+                                    <%= producto.stock > 0 ? '' : 'disabled' %>>
+                                <i class="bi bi-cart-plus-fill me-2"></i>
+                                <%= producto.stock > 0 ? 'Agregar al Carrito' : 'Agotado' %>
                             </button>
                         </div>
                     </div>
@@ -171,18 +201,29 @@
 
                     const productoId = form.dataset.productId;
                     const cantidad = document.getElementById('quantity').value;
-                    // (antiforgery de ASP.NET eliminado; usar CSRF de Express si se necesita)
 
-                    const formData = new FormData();
-                    formData.append('productoId', productoId);
-                    formData.append('cantidad', cantidad);
+                    // Si el producto maneja tallas, hay que elegir una.
+                    const grupoTallas = form.querySelector('.selector-tallas');
+                    const tallaMarcada = form.querySelector('input[name="talla"]:checked');
+                    const aviso = document.getElementById('avisoTalla');
+
+                    if (grupoTallas && !tallaMarcada) {
+                        if (aviso) aviso.hidden = false;
+                        grupoTallas.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                        return;
+                    }
+                    if (aviso) aviso.hidden = true;
 
                     fetch('/carrito/agregar', {
                         method: 'POST',
-                        headers: {
-                            'RequestVerificationToken': token
-                        },
-                        body: formData
+                        // JSON, que es lo que el servidor sabe leer. Antes se
+                        // enviaba FormData (multipart) y no llegaba nada.
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            productoId: productoId,
+                            cantidad: Number(cantidad),
+                            talla: tallaMarcada ? tallaMarcada.value : ''
+                        })
                     })
                         .then(response => {
                             if (!response.ok) {
@@ -192,10 +233,10 @@
                         })
                         .then(result => {
                             if (result.success) {
-                                mostrarNotificacion(result.message); // ✅ Notificación bonita
-                                const cartCountElement = document.getElementById('cart-item-count');
-                                if (cartCountElement) {
-                                    cartCountElement.textContent = result.itemCount;
+                                mostrarNotificacion(result.message);
+                                // La burbuja de la navbar es #cart-badge (ver navbar.ejs).
+                                if (typeof window.updateCartCount === 'function') {
+                                    window.updateCartCount();
                                 }
                             } else {
                                 mostrarNotificacion('Error: ' + result.message, true);

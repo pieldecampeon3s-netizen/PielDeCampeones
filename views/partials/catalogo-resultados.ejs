@@ -1,0 +1,64 @@
+<%#
+  Rejilla de resultados del catálogo.
+
+  Se renderiza en dos sitios: dentro de la página completa y como respuesta
+  suelta a /catalogo?parcial=1, que es lo que pide catalogo.js al filtrar. Por
+  eso no puede depender de nada del layout.
+
+  Espera: productos, fichas, hayFiltros, formatCOP
+%>
+
+<%# --- Fichas de los filtros activos ------------------------------------- %>
+<% if (fichas.length) { %>
+    <div class="fichas-activas">
+        <% fichas.forEach(function (ficha) { %>
+            <button type="button"
+                    class="ficha"
+                    data-quitar-filtro="<%= ficha.tipo %>"
+                    data-valor="<%= ficha.valor %>">
+                <%= ficha.etiqueta %>
+                <i class="bi bi-x"></i>
+            </button>
+        <% }); %>
+
+        <button type="button" class="ficha ficha-limpiar" data-limpiar-filtros>
+            Limpiar todo
+        </button>
+    </div>
+<% } %>
+
+<%# --- Rejilla o estado vacío -------------------------------------------- %>
+<% if (productos.length > 0) { %>
+
+    <div class="row row-cols-2 row-cols-md-2 row-cols-xl-3 g-3 g-md-4">
+        <% productos.forEach(function (producto) { %>
+            <div class="col">
+                <%- include('product-card', { producto: producto }) %>
+            </div>
+        <% }); %>
+    </div>
+
+<% } else { %>
+
+    <div class="sin-resultados">
+        <i class="bi bi-search"></i>
+
+        <h3>No encontramos camisetas</h3>
+
+        <p>
+            <% if (hayFiltros) { %>
+                Ninguna camiseta coincide con lo que buscas.
+                Prueba a quitar algún filtro.
+            <% } else { %>
+                Aún no hay camisetas publicadas en la tienda.
+            <% } %>
+        </p>
+
+        <% if (hayFiltros) { %>
+            <button type="button" class="btn btn-danger" data-limpiar-filtros>
+                Quitar todos los filtros
+            </button>
+        <% } %>
+    </div>
+
+<% } %>

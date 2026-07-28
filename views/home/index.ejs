@@ -1,69 +1,12 @@
-<section class="hero-search-section">
-    <div class="video-background-container">
-        <picture>
-            <source type="image/avif"
-                    sizes="100vw"
-                    srcset="/images/futbol-768.avif   768w,
-                            /images/futbol-1280.avif 1280w,
-                            /images/futbol-1920.avif 1920w,
-                            /images/futbol-2560.avif 2560w">
-            <source type="image/webp"
-                    sizes="100vw"
-                    srcset="/images/futbol-768.webp   768w,
-                            /images/futbol-1280.webp 1280w,
-                            /images/futbol-1920.webp 1920w,
-                            /images/futbol-2560.webp 2560w">
-            <img src="/images/futbol.jpg"
-                 alt="Camisetas de fútbol negras exhibidas en una tienda"
-                 class="hero-image"
-                 width="2560" height="1440"
-                 fetchpriority="high"
-                 decoding="async">
-        </picture>
+<%#
+  Portada. Es la tienda: el cliente ve camisetas nada más entrar. Debajo se
+  mantienen las secciones de siempre (por qué elegirnos, guía de tallas,
+  marcas, compromiso y testimonios), que aportan confianza sin estorbar.
 
-        <div class="video-overlay"></div>
-    </div>
+  El hero antiguo se sustituyó por el carrusel de la tienda.
+%>
+<%- include('../partials/tienda') %>
 
-    <div class="container hero-content text-center">
-
-        <span class="badge bg-danger px-3 py-2 mb-3" data-aos="fade-down">
-            ⚽ NUEVA COLECCIÓN 2026
-        </span>
-
-        <h1 class="display-2 fw-bold text-white mb-3" data-aos="fade-up" data-aos-delay="100">
-            Piel de Campeón
-        </h1>
-
-        <h2 class="display-5 fw-semibold text-white mb-4" data-aos="fade-up" data-aos-delay="200">
-            La pasión se viste.
-        </h2>
-
-        <p class="lead text-white-50 mx-auto mb-5"
-           style="max-width:700px;"
-           data-aos="fade-up"
-           data-aos-delay="300">
-            Descubre camisetas de clubes y selecciones nacionales con la mejor calidad.
-            Vive cada partido llevando los colores de tu equipo favorito.
-        </p>
-
-        <div class="d-flex justify-content-center gap-3 flex-wrap"
-             data-aos="zoom-in"
-             data-aos-delay="400">
-
-            <a href="/catalogo" class="btn btn-danger btn-lg px-5">
-                <i class="bi bi-bag-fill me-2"></i>
-                Comprar Ahora
-            </a>
-
-            <a href="/sobre-nosotros" class="btn btn-outline-light btn-lg px-5">
-                <i class="bi bi-trophy-fill me-2"></i>
-                Conócenos
-            </a>
-
-        </div>
-
-    </div>
-</section>
 
 <section class="section-final-cta">
     <div class="container">
@@ -87,7 +30,7 @@
                  data-aos="fade-up"
                  data-aos-delay="400">
 
-                <a href="/catalogo" class="btn btn-primary btn-lg px-4 shadow-lg">
+                <a href="/" class="btn btn-primary btn-lg px-4 shadow-lg">
                     <i class="bi bi-bag-fill me-2"></i>
                     Explorar Camisetas
                 </a>
@@ -253,7 +196,9 @@
 
 
 <section class="brands-section">
-    <div class="container my-5 py-5">
+    <%# .brands-section ya aporta 80px arriba y abajo: el my-5 py-5 que había
+        aquí duplicaba el espacio y dejaba el título muy lejos de los logos. %>
+    <div class="container">
         <section data-aos="fade-up">
             <h2 class="section-title">Trabajamos con las Mejores Marcas</h2>
 
@@ -366,10 +311,7 @@
             <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="100">
                 <div class="testimonial-card-v3">
 
-                    <img src="/images/client-1.jpg"
-                         alt="Cliente Andrés Ramírez"
-                         class="testimonial-img"
-                         onerror="this.onerror=null;this.src='https://placehold.co/80x80/212529/FFF?text=AR';">
+                    <span class="testimonial-img" aria-hidden="true">AR</span>
 
                     <p class="testimonial-text">
                         "La camiseta llegó exactamente como la esperaba. Excelente calidad, muy cómoda y el envío fue más rápido de lo que imaginaba."
@@ -389,10 +331,7 @@
             <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="200">
                 <div class="testimonial-card-v3">
 
-                    <img src="/images/client-2.jpg"
-                         alt="Cliente Laura Gómez"
-                         class="testimonial-img"
-                         onerror="this.onerror=null;this.src='https://placehold.co/80x80/d90429/FFF?text=LG';">
+                    <span class="testimonial-img" aria-hidden="true">LG</span>
 
                     <p class="testimonial-text">
                         "Compré la camiseta de la Selección Colombia y superó mis expectativas. Los acabados son muy buenos y la atención fue excelente."
@@ -412,10 +351,7 @@
             <div class="col-md-6 col-lg-4 mb-4" data-aos="fade-up" data-aos-delay="300">
                 <div class="testimonial-card-v3">
 
-                    <img src="/images/client-3.jpg"
-                         alt="Cliente Santiago Torres"
-                         class="testimonial-img"
-                         onerror="this.onerror=null;this.src='https://placehold.co/80x80/ffc107/000?text=ST';">
+                    <span class="testimonial-img" aria-hidden="true">ST</span>
 
                     <p class="testimonial-text">
                         "Ya he comprado varias camisetas y siempre llegan en perfecto estado. Sin duda seguiré comprando en Piel de Campeón."
@@ -468,7 +404,7 @@
             }
         /* VARIABLES GLOBALES */
         :root {
-            --color-primario: #d90429;
+            --color-primario: #d9b04a;
             --color-fondo-oscuro: #000000;
             --ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
         }
@@ -732,12 +668,26 @@
             color: var(--color-texto-secundario);
         }
 
+        /*
+          Ya no es una <img>: son las iniciales del cliente sobre un círculo.
+          Las fotos /images/client-N.jpg no existían (404) y el respaldo
+          apuntaba a placehold.co, un servicio externo que en redes sin acceso
+          a CDN tampoco carga. Así no hace falta ninguna petición.
+        */
         .testimonial-img {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             width: 80px;
             height: 80px;
             border-radius: 50%;
-            object-fit: cover;
             margin: -50px auto 1rem;
+            background: linear-gradient(135deg, #262626, #383838);
+            color: var(--color-primario);
+            font-size: 1.6rem;
+            font-weight: 700;
+            font-style: normal;
+            letter-spacing: 0.03em;
             border: 4px solid var(--color-fondo-oscuro);
             box-shadow: 0 5px 15px rgba(0,0,0,0.2);
         }
@@ -983,7 +933,12 @@
             position: relative;
             padding: 100px 0;
             color: #ffffff;
-            background-image: url('https://images.unsplash.com/photo-1497032628192-86f99d791b7e?q=80&w=2070&auto=format&fit=crop');
+            /* Antes venía de images.unsplash.com: la foto ya no existe (404) y era una
+               petición externa que falla en redes sin acceso a terceros.
+               Se usa la de la tienda: JPG para navegadores antiguos y WebP debajo. */
+            background-image: url('/images/futbol.jpg');
+            background-image: image-set(url('/images/futbol-1280.webp') type('image/webp'),
+                                        url('/images/futbol.jpg') type('image/jpeg'));
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
@@ -1057,7 +1012,12 @@
             padding: 80px 0;
             color: #ffffff;
             /* Usa la misma imagen o una similar a la del CTA para coherencia */
-            background-image: url('https://images.unsplash.com/photo-1497032628192-86f99d791b7e?q=80&w=2070&auto=format&fit=crop');
+            /* Antes venía de images.unsplash.com: la foto ya no existe (404) y era una
+               petición externa que falla en redes sin acceso a terceros.
+               Se usa la de la tienda: JPG para navegadores antiguos y WebP debajo. */
+            background-image: url('/images/futbol.jpg');
+            background-image: image-set(url('/images/futbol-1280.webp') type('image/webp'),
+                                        url('/images/futbol.jpg') type('image/jpeg'));
             background-size: cover;
             background-position: center center;
             background-attachment: fixed; /* Efecto Parallax */
@@ -1138,7 +1098,12 @@
             position: relative;
             padding: 80px 0;
             /* Consistencia con el resto de las secciones premium */
-            background-image: url('https://images.unsplash.com/photo-1497032628192-86f99d791b7e?q=80&w=2070&auto=format&fit=crop');
+            /* Antes venía de images.unsplash.com: la foto ya no existe (404) y era una
+               petición externa que falla en redes sin acceso a terceros.
+               Se usa la de la tienda: JPG para navegadores antiguos y WebP debajo. */
+            background-image: url('/images/futbol.jpg');
+            background-image: image-set(url('/images/futbol-1280.webp') type('image/webp'),
+                                        url('/images/futbol.jpg') type('image/jpeg'));
             background-size: cover;
             background-position: center center;
             background-attachment: fixed;
@@ -1290,16 +1255,20 @@
             }
 
         .brands-section {
-            background: url('/images/fondo-marcas.jpg') center center/cover no-repeat;
+            /* Antes cargaba /images/fondo-marcas.jpg, que no existe: la sección
+               quedaba como un rectángulo negro plano. Un degradado da algo de
+               profundidad sin depender de una imagen que falta. */
+            background: radial-gradient(ellipse at 50% 0%, #1f1f1f 0%, #0a0a0a 65%);
             position: relative;
             padding: 80px 0;
         }
 
+            /* Viñeteado suave en los bordes para que los logos destaquen al centro. */
             .brands-section::before {
                 content: "";
                 position: absolute;
                 inset: 0;
-                background: rgba(0,0,0,.75);
+                background: radial-gradient(ellipse at center, transparent 45%, rgba(0,0,0,.55) 100%);
             }
 
             .brands-section .container {
@@ -1308,23 +1277,45 @@
             }
 
         .brand-card {
-            background: rgba(255,255,255,.05);
+            background: rgba(255,255,255,.08);
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,.1);
+            border: 1px solid rgba(255,255,255,.16);
             border-radius: 20px;
-            padding: 30px;
+            padding: 24px;
+            /* Alto fijo y centrado: los tres PNG tienen proporciones distintas
+               y antes cada tarjeta salía de un tamaño. */
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: .3s;
         }
 
             .brand-card:hover {
                 transform: translateY(-8px);
-                background: rgba(255,255,255,.08);
+                background: rgba(255,255,255,.1);
+                border-color: rgba(255,255,255,.25);
             }
 
             .brand-card img {
-                width: 100%;
-                max-height: 90px;
+                /* max-width en vez de width:100%: así cada logo conserva su
+                   proporción y los tres pesan visualmente lo mismo. */
+                max-width: 100%;
+                max-height: 52px;
+                width: auto;
                 object-fit: contain;
+                /* Los tres logos son trazos oscuros sobre fondo transparente:
+                   sobre la tarjeta negra no se veían. brightness(0) los aplana
+                   a negro puro e invert(1) los deja blancos, conservando la
+                   transparencia. Es la versión "reversed" que las propias
+                   marcas usan sobre fondo oscuro. */
+                filter: brightness(0) invert(1);
+                opacity: 1;
+                transition: transform .3s ease;
+            }
+
+            .brand-card:hover img {
+                transform: scale(1.08);
             }
     </style>
 

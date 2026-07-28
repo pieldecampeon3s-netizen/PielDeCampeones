@@ -2,7 +2,7 @@
 
 /* --- 1. Definición de Variables Globales y Colores Base --- */
 :root {
-    --color-primario: #d90429; /* Rojo de la marca */
+    --color-primario: #d9b04a; /* Dorado de la marca */
     --color-fondo-oscuro: #121212; /* Un negro elegante, no puro */
     --color-superficie-oscura: #1e1e1e; /* Para tarjetas y elementos elevados */
     --color-borde-oscuro: #333333;
@@ -199,7 +199,13 @@ a {
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background-image: linear-gradient(rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.9)), url('/images/hero-main-bg.jpg');
+    /* La imagen original (hero-main-bg.jpg) no existe. Se reutiliza la
+       foto de la tienda: el JPG para navegadores antiguos y, debajo,
+       la versión WebP que pesa la cuarta parte. */
+    background-image: linear-gradient(rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.9)), url('/images/futbol.jpg');
+    background-image: linear-gradient(rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.9)),
+                      image-set(url('/images/futbol-1280.webp') type('image/webp'),
+                                url('/images/futbol.jpg') type('image/jpeg'));
     background-size: cover;
     background-position: center;
     padding: 2rem;

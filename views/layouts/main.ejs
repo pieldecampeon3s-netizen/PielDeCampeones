@@ -12,7 +12,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%= typeof title !== 'undefined' && title ? title : 'Piel de Campeón' %></title>
 
-    <link rel="icon" href="/favicon.ico" />
+    <%#
+      Iconos. El SVG lo prefieren los navegadores modernos (nítido a cualquier
+      tamaño y una sola descarga); el .ico queda para los antiguos y para la
+      barra de tareas de Windows.
+    %>
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <%# Tiñe la barra del navegador en Android para que no corte con la página. %>
+    <meta name="theme-color" content="#0d0d0d" />
     <%#
       Librerías servidas por el propio servidor (ver /vendor en server.js).
       Antes venían de cdn.jsdelivr.net, unpkg.com y fonts.googleapis.com: en
@@ -24,6 +34,14 @@
     <link rel="stylesheet" href="/vendor/aos/aos.css" />
     <link rel="stylesheet" href="/css/fuentes.css" />
     <link rel="stylesheet" href="/css/site.css" />
+    <link rel="stylesheet" href="/css/componentes.css" />
+    <link rel="stylesheet" href="/css/barra-inferior.css" />
+
+    <%# Hojas propias de la página, si la ruta las pide (p. ej. el catálogo). %>
+    <% (typeof estilos !== 'undefined' ? estilos : []).forEach(function (hoja) { %>
+        <link rel="stylesheet" href="<%= hoja %>" />
+    <% }); %>
+
     <%# Ajustes de móvil: va el último para poder sobreescribir a Bootstrap y a site.css %>
     <link rel="stylesheet" href="/css/movil.css" />
 
@@ -44,6 +62,20 @@
             .animate-on-scroll.is-visible {
                 opacity: 1;
                 transform: translateY(0) scale(1);
+            }
+
+        /*
+          El contenedor del toast es fijo y con padding, así que sigue
+          interceptando clics en su esquina aunque el toast esté oculto: justo
+          encima de los botones "Añadir al carrito" de la última tarjeta.
+          Solo el toast visible debe recibir toques.
+        */
+        .toast-container {
+            pointer-events: none;
+        }
+
+            .toast-container .toast {
+                pointer-events: auto;
             }
 
         #notificacion {
@@ -69,10 +101,18 @@
             }
     </style>
 </head>
-<body>
-    <%- include('../partials/navbar') %>
+<body class="<%= typeof cuerpoClase !== 'undefined' ? cuerpoClase : '' %>"
+      data-pagina="<%= typeof pagina !== 'undefined' ? pagina : '' %>">
+    <%#
+      Páginas de pago: sin navbar ni footer. Menos distracciones en el paso
+      donde el cliente decide, que es la práctica habitual en tiendas.
+      Aun así pasan por este layout para no volver a depender de CDN externos.
+    %>
+    <% if (typeof soloContenido === 'undefined' || !soloContenido) { %>
+        <%- include('../partials/navbar') %>
+    <% } %>
 
-    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999">
         <div id="toastCarrito" class="toast align-items-center text-white bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body fw-semibold">
@@ -83,18 +123,29 @@
         </div>
     </div>
 
-    <%# Padding para que el contenido no quede debajo de la navbar fija %>
-    <div style="padding-top: 70px;">
+    <%# El padding compensa la navbar fija; sin navbar no hace falta. %>
+    <div style="padding-top: <%= typeof soloContenido !== 'undefined' && soloContenido ? '0' : '70px' %>;">
         <main role="main" class="pb-3">
             <%- body %>
         </main>
     </div>
 
-    <%- include('../partials/footer') %>
+    <% if (typeof soloContenido === 'undefined' || !soloContenido) { %>
+        <%- include('../partials/footer') %>
+        <%- include('../partials/barra-inferior') %>
+    <% } %>
 
     <script src="/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script src="/vendor/aos/aos.js"></script>
     <script src="/js/site.js"></script>
+    <%# Los favoritos van aparte y en todas las páginas: la tarjeta de producto
+        se pinta en el catálogo, en /favoritos y donde haga falta. %>
+    <script src="/js/favoritos.js" defer></script>
+
+    <%# Scripts propios de la página, si la ruta los pide. %>
+    <% (typeof scripts !== 'undefined' ? scripts : []).forEach(function (archivo) { %>
+        <script src="<%= archivo %>" defer></script>
+    <% }); %>
 
     <script>
         // Añadir al carrito desde cualquier tarjeta de producto
@@ -131,12 +182,15 @@
             }
         });
 
-        // Contador del carrito en la navbar
+        // Contador del carrito: hay dos, el de la navbar (escritorio) y el de
+        // la barra inferior (móvil). Se actualizan los dos a la vez.
         function actualizarBadge(cantidad) {
-            const badge = document.getElementById('cart-badge');
-            if (!badge) return;
-            badge.textContent = cantidad;
-            badge.style.display = cantidad > 0 ? 'inline-block' : 'none';
+            ['cart-badge', 'cart-badge-movil'].forEach(function (id) {
+                const badge = document.getElementById(id);
+                if (!badge) return;
+                badge.textContent = cantidad;
+                badge.style.display = cantidad > 0 ? 'inline-flex' : 'none';
+            });
         }
 
         window.updateCartCount = function () {

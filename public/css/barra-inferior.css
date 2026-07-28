@@ -1,0 +1,163 @@
+/*
+  Barra de navegación inferior (solo móvil).
+
+  Reemplaza al menú de hamburguesa en pantallas pequeñas: las secciones
+  principales quedan a un toque en la zona del pulgar, que es donde la mano
+  sostiene el teléfono.
+*/
+
+.barra-inferior {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1035;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-around;
+    gap: .25rem;
+    padding: .5rem .5rem calc(.5rem + env(safe-area-inset-bottom));
+    background: #0d0d0d;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+    border-top-left-radius: 22px;
+    border-top-right-radius: 22px;
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, .5);
+}
+
+.barra-item,
+.barra-carrito {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    gap: .2rem;
+    flex: 1;
+    min-width: 0;
+    min-height: 52px;
+    padding: .35rem .1rem;
+    color: #9a9a9a;
+    /* Ajustado para que "Sobre nosotros", la etiqueta más larga, entre sin
+       cortarse en una pantalla de 360px. */
+    font-size: .6rem;
+    letter-spacing: -.01em;
+    line-height: 1.2;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: color .2s ease;
+}
+
+.barra-item .bi {
+    font-size: 1.35rem;
+}
+
+/*
+  "Sobre nosotros" no cabe en una línea con cinco columnas en un móvil de
+  360px. En vez de recortarlo, se permiten dos líneas y se reserva esa altura
+  en TODAS las etiquetas: así los iconos siguen alineados entre sí aunque
+  "Inicio" solo ocupe una.
+
+  Ojo: esta regla debe apuntar SOLO a la etiqueta de texto. Antes decía
+  `.barra-carrito > span` y también alcanzaba al círculo del carrito, que
+  igualmente es un span hijo directo: le imponía display:-webkit-box y el
+  icono se iba al borde superior en vez de quedar centrado.
+*/
+.barra-etiqueta {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    max-width: 100%;
+    min-height: 2.4em;
+    word-break: break-word;
+}
+
+.barra-item:hover,
+.barra-item:focus-visible {
+    color: #e6e6e6;
+}
+
+.barra-item.activo {
+    color: var(--color-primario, #d9b04a);
+}
+
+/* --- Carrito central elevado --- */
+.barra-carrito {
+    color: var(--color-primario, #d9b04a);
+    font-weight: 600;
+}
+
+.barra-carrito-circulo {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 58px;
+    height: 58px;
+    /* Sube por encima de la barra, como en el diseño. */
+    margin-top: -28px;
+    margin-bottom: .15rem;
+    border-radius: 50%;
+    background: var(--color-primario, #d9b04a);
+    color: #1a1400;
+    font-size: 1.5rem;
+    box-shadow: 0 6px 18px rgba(217, 176, 74, .35);
+    border: 4px solid #0d0d0d;
+}
+
+.barra-carrito-cuenta {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    min-width: 22px;
+    height: 22px;
+    padding: 0 5px;
+    border-radius: 999px;
+    background: #1a1a1a;
+    color: #fff;
+    font-size: .7rem;
+    font-weight: 700;
+    line-height: 22px;
+    text-align: center;
+    border: 2px solid #0d0d0d;
+}
+
+/*
+  Hueco al final de la página para que la barra no tape el último contenido
+  (el pie, el botón de un formulario…). Se aplica solo cuando la barra existe.
+
+  Son 112px y no la altura de la barra (87px): el círculo del carrito sobresale
+  28px por encima, y sin contarlo se comía la línea de copyright del pie.
+*/
+@media (max-width: 991.98px) {
+    body:has(.barra-inferior) {
+        padding-bottom: 112px;
+    }
+}
+
+/*
+  Pantallas muy estrechas (un Galaxy Fold cerrado son 280px): con cinco huecos
+  el círculo de 58px no cabe en los 50px que le tocan y se salía por los lados.
+*/
+@media (max-width: 400px) {
+    .barra-carrito-circulo {
+        width: 46px;
+        height: 46px;
+        margin-top: -22px;
+        font-size: 1.2rem;
+        border-width: 3px;
+    }
+
+    .barra-carrito-cuenta {
+        min-width: 18px;
+        height: 18px;
+        line-height: 18px;
+        font-size: .62rem;
+        top: -1px;
+        right: -1px;
+    }
+
+    .barra-item .bi {
+        font-size: 1.2rem;
+    }
+}

@@ -6,12 +6,21 @@
             <div class="col-lg-8" data-aos="fade-up">
                 <div class="cart-items-table">
                     <% (carrito.items || []).forEach(function (item) { %>
-                        <div class="cart-item-row" id="cart-row-<%= item.productoId %>">
+                        <%#
+                          La misma camiseta en dos tallas son dos líneas: la fila
+                          se identifica por producto + talla, no solo por producto,
+                          o al borrar una desaparecerían las dos.
+                        %>
+                        <% const lineaId = item.productoId + '-' + (item.talla || 'unica'); %>
+                        <div class="cart-item-row" id="cart-row-<%= lineaId %>">
                             <div class="cart-item-image">
                                 <img src="<%= item.imagenUrl %>" alt="<%= item.nombreProducto %>">
                             </div>
                             <div class="cart-item-details">
                                 <h5 class="product-name"><%= item.nombreProducto %></h5>
+                                <% if (item.talla) { %>
+                                    <p class="product-talla">Talla: <strong><%= item.talla %></strong></p>
+                                <% } %>
                                 <p class="product-price"><%= formatCOP(item.precio) %></p>
                             </div>
                             <div class="cart-item-quantity">
@@ -22,7 +31,11 @@
                                 <p><%= formatCOP(item.subtotal) %></p>
                             </div>
                             <div class="cart-item-remove">
-                                <button class="btn btn-remove" data-product-id="<%= item.productoId %>" title="Eliminar producto">
+                                <button class="btn btn-remove"
+                                        data-product-id="<%= item.productoId %>"
+                                        data-talla="<%= item.talla || '' %>"
+                                        data-linea="<%= lineaId %>"
+                                        title="Eliminar producto">
                                     <i class="bi bi-trash3-fill"></i>
                                 </button>
                             </div>
@@ -58,7 +71,7 @@
         <i class="bi bi-cart-x" style="font-size: 4rem; color: var(--color-secundario);"></i>
         <h3 class="mt-4 fw-bold">Tu carrito está vacío</h3>
         <p class="lead text-muted mt-2">Parece que aún no has añadido ningún producto. ¡Explora nuestro catálogo!</p>
-        <a href="/catalogo" class="btn btn-brand-accent mt-3">Volver a la Tienda</a>
+        <a href="/" class="btn btn-brand-accent mt-3">Volver a la Tienda</a>
     </div>
 </div>
 
@@ -351,18 +364,19 @@
             document.querySelectorAll('.btn-remove').forEach(button => {
                 button.addEventListener('click', function () {
                     const productoId = this.dataset.productId;
+                    const talla = this.dataset.talla || '';
+                    const linea = this.dataset.linea;
 
                     mostrarModalConfirmacion("¿Estás seguro de que quieres eliminar este producto?", () => {
                         fetch('/carrito/eliminar', {
                             method: 'POST',
-                            headers: {                                'Content-Type': 'application/x-www-form-urlencoded'
-                            },
-                            body: 'productoId=' + productoId
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ productoId: productoId, talla: talla })
                         })
                             .then(response => response.json())
                             .then(data => {
                                 if (data.success) {
-                                    const row = document.getElementById('cart-row-' + productoId);
+                                    const row = document.getElementById('cart-row-' + linea);
                                     row.style.transition = 'all 0.5s ease';
                                     row.style.opacity = '0';
                                     row.style.transform = 'translateX(50px)';

@@ -1,0 +1,180 @@
+<%#
+  Panel de filtros del catálogo.
+
+  Usa el "offcanvas responsive" de Bootstrap: `offcanvas-lg` se comporta como
+  panel deslizante por debajo de lg y como columna fija a partir de ahí. Así
+  hay un solo marcado para móvil y escritorio, sin duplicar ids.
+
+  El <form> funciona por sí solo con GET aunque no haya JavaScript; catalogo.js
+  lo intercepta para actualizar sin recargar.
+
+  Espera: categorias, conteos, filtros, rango, formatCOP, totalResultados
+%>
+<%# La tienda vive en la portada, así que el formulario apunta a "/". %>
+<form id="formFiltros" action="/" method="get" class="filtros-form">
+
+    <%# El orden se controla desde la barra superior, pero viaja en el mismo
+        formulario para no perderse al filtrar. %>
+    <input type="hidden" name="orden" value="<%= filtros.orden %>">
+
+    <div class="offcanvas-lg offcanvas-bottom panel-filtros"
+         tabindex="-1"
+         id="panelFiltros"
+         aria-labelledby="tituloFiltros">
+
+        <div class="offcanvas-header">
+            <h5 class="offcanvas-title" id="tituloFiltros">
+                <i class="bi bi-sliders me-2"></i>Filtros
+            </h5>
+            <button type="button"
+                    class="btn-close btn-close-white"
+                    data-bs-dismiss="offcanvas"
+                    data-bs-target="#panelFiltros"
+                    aria-label="Cerrar"></button>
+        </div>
+
+        <div class="offcanvas-body">
+
+            <%# --- Buscador ------------------------------------------------ %>
+            <div class="filtro-grupo">
+                <label class="filtro-titulo" for="campoBusqueda">Buscar</label>
+
+                <div class="campo-busqueda">
+                    <i class="bi bi-search"></i>
+                    <input type="search"
+                           class="form-control"
+                           id="campoBusqueda"
+                           name="q"
+                           value="<%= filtros.busqueda %>"
+                           placeholder="Equipo, país, temporada…"
+                           autocomplete="off">
+                    <button type="button"
+                            class="borrar-busqueda <%= filtros.busqueda ? '' : 'd-none' %>"
+                            aria-label="Borrar búsqueda">
+                        <i class="bi bi-x-circle-fill"></i>
+                    </button>
+                </div>
+            </div>
+
+            <%# --- Categorías ---------------------------------------------- %>
+            <div class="filtro-grupo">
+                <span class="filtro-titulo">Categorías</span>
+
+                <div class="lista-categorias">
+                    <% categorias.forEach(function (categoria) { %>
+                        <%
+                          const marcada = filtros.categorias.some(
+                            (c) => c.toLowerCase() === categoria.toLowerCase()
+                          );
+                          const cuantos = conteos[categoria] || 0;
+                          // Sin resultados y sin marcar: no tiene sentido ofrecerla.
+                          const desactivada = cuantos === 0 && !marcada;
+                          const id = 'cat-' + categoria.replace(/[^a-zA-Z0-9]/g, '');
+                        %>
+                        <div class="opcion-categoria <%= desactivada ? 'desactivada' : '' %>">
+                            <input class="form-check-input"
+                                   type="checkbox"
+                                   name="categoria"
+                                   value="<%= categoria %>"
+                                   id="<%= id %>"
+                                   <%= marcada ? 'checked' : '' %>
+                                   <%= desactivada ? 'disabled' : '' %>>
+
+                            <label class="form-check-label" for="<%= id %>">
+                                <span class="nombre-categoria"><%= categoria %></span>
+                                <span class="conteo-categoria"><%= cuantos %></span>
+                            </label>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+
+            <%# --- Precio -------------------------------------------------- %>
+            <div class="filtro-grupo">
+                <span class="filtro-titulo">Precio</span>
+
+                <output class="precio-actual" id="precioActual">
+                    <%= formatCOP(filtros.min) %> – <%= formatCOP(filtros.max) %>
+                </output>
+
+                <%#
+                  Dos <input type="range"> superpuestos. El navegador no trae un
+                  deslizador de dos extremos, y esta es la forma accesible de
+                  conseguirlo: cada uno sigue siendo un control real, con
+                  teclado y lector de pantalla.
+                %>
+                <div class="rango-doble"
+                     data-min="<%= rango.min %>"
+                     data-max="<%= rango.max %>">
+
+                    <div class="rango-pista"></div>
+                    <div class="rango-relleno" id="rangoRelleno"></div>
+
+                    <input type="range"
+                           id="precioMin"
+                           name="min"
+                           min="<%= rango.min %>"
+                           max="<%= rango.max %>"
+                           step="1000"
+                           value="<%= filtros.min %>"
+                           aria-label="Precio mínimo">
+
+                    <input type="range"
+                           id="precioMax"
+                           name="max"
+                           min="<%= rango.min %>"
+                           max="<%= rango.max %>"
+                           step="1000"
+                           value="<%= filtros.max %>"
+                           aria-label="Precio máximo">
+                </div>
+
+                <div class="rango-limites">
+                    <span><%= formatCOP(rango.min) %></span>
+                    <span><%= formatCOP(rango.max) %></span>
+                </div>
+            </div>
+
+            <%# --- Disponibilidad ------------------------------------------ %>
+            <div class="filtro-grupo">
+                <div class="form-check form-switch interruptor-stock">
+                    <input class="form-check-input"
+                           type="checkbox"
+                           role="switch"
+                           id="soloDisponibles"
+                           name="disponible"
+                           value="1"
+                           <%= filtros.soloDisponibles ? 'checked' : '' %>>
+                    <label class="form-check-label" for="soloDisponibles">
+                        Solo disponibles
+                        <small>Oculta las camisetas agotadas</small>
+                    </label>
+                </div>
+            </div>
+
+        </div>
+
+        <%#
+          Pie fijo del panel, solo en móvil: las dos acciones quedan donde
+          alcanza el pulgar y el botón dice cuántos resultados va a mostrar,
+          así el usuario decide antes de cerrar.
+        %>
+        <div class="offcanvas-footer d-lg-none">
+            <button type="button" class="btn btn-outline-light" id="limpiarFiltrosMovil">
+                Limpiar
+            </button>
+
+            <button type="button"
+                    class="btn btn-danger flex-grow-1"
+                    data-bs-dismiss="offcanvas"
+                    data-bs-target="#panelFiltros">
+                Ver <span data-contador-resultados><%= totalResultados %></span> resultados
+            </button>
+        </div>
+    </div>
+
+    <%# Sin JavaScript el formulario necesita un botón real para enviarse. %>
+    <noscript>
+        <button type="submit" class="btn btn-danger w-100 mt-3">Aplicar filtros</button>
+    </noscript>
+</form>

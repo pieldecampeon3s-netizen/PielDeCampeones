@@ -1,0 +1,40 @@
+<%#
+  Barra de navegación inferior, solo en móvil. Sustituye al menú de hamburguesa:
+  las cinco secciones principales quedan a un toque, en la zona donde llega el
+  pulgar, y el carrito destaca en el centro por ser la acción de más valor.
+
+  Se oculta en el checkout (soloContenido), donde no debe haber distracciones.
+
+  Usa `currentPath`, que ya pone server.js en res.locals.
+%>
+<nav class="barra-inferior d-lg-none" aria-label="Navegación principal">
+
+    <a href="/" class="barra-item <%= currentPath === '/' ? 'activo' : '' %>">
+        <i class="bi bi-house<%= currentPath === '/' ? '-fill' : '' %>"></i>
+        <span class="barra-etiqueta">Inicio</span>
+    </a>
+
+    <a href="/sobre-nosotros" class="barra-item <%= currentPath === '/sobre-nosotros' ? 'activo' : '' %>">
+        <i class="bi bi-shield<%= currentPath === '/sobre-nosotros' ? '-fill' : '' %>"></i>
+        <span class="barra-etiqueta">Sobre nosotros</span>
+    </a>
+
+    <%# El carrito, elevado y en el centro: es la acción que más importa. %>
+    <a href="/carrito" class="barra-carrito" aria-label="Ver mi carrito">
+        <span class="barra-carrito-circulo">
+            <i class="bi bi-cart-fill"></i>
+            <span class="barra-carrito-cuenta" id="cart-badge-movil">0</span>
+        </span>
+        <span class="barra-etiqueta">Carrito</span>
+    </a>
+
+    <a href="/contactanos" class="barra-item <%= currentPath === '/contactanos' ? 'activo' : '' %>">
+        <i class="bi bi-whatsapp"></i>
+        <span class="barra-etiqueta">Contactos</span>
+    </a>
+
+    <a href="/account/login" class="barra-item <%= currentPath.startsWith('/account') ? 'activo' : '' %>">
+        <i class="bi bi-person<%= currentPath.startsWith('/account') ? '-fill' : '' %>"></i>
+        <span class="barra-etiqueta">Mi cuenta</span>
+    </a>
+</nav>

@@ -10,6 +10,10 @@ const categorias = [
   { id: 5, nombre: 'Ediciones Especiales', descripcion: 'Lanzamientos limitados.' },
 ];
 
+// Tallas que se manejan en la tienda. Coinciden con la guía de tallas de la
+// portada (views/home/index.ejs). Cada producto declara cuáles tiene.
+const TALLAS = ['S', 'M', 'L', 'XL', '2XL'];
+
 const productos = [
   {
     id: 1,
@@ -17,6 +21,7 @@ const productos = [
     oem: 'ADI-RM-2425',
     precio: 189000,
     stock: 24,
+    tallas: ['S', 'M', 'L', 'XL', '2XL'],
     descripcion: 'Camiseta local del Real Madrid, temporada 2024/25. Tejido transpirable.',
     imagenUrl: '/images/REAL.jpg',
     idCategoria: 1,
@@ -30,6 +35,7 @@ const productos = [
     oem: 'NIK-FCB-2425',
     precio: 185000,
     stock: 18,
+    tallas: ['S', 'M', 'L', 'XL'],
     descripcion: 'Camiseta local del FC Barcelona con los colores blaugrana clásicos.',
     imagenUrl: '/images/BARCA3.jpg',
     idCategoria: 1,
@@ -43,6 +49,7 @@ const productos = [
     oem: 'COL-RETRO-90',
     precio: 165000,
     stock: 7,
+    tallas: ['M', 'L', 'XL'],
     descripcion: 'Réplica retro de la Selección Colombia. Edición de colección.',
     imagenUrl: '/images/ColombiaR.jpeg',
     idCategoria: 3,
@@ -56,6 +63,7 @@ const productos = [
     oem: 'NIK-LFC-2425',
     precio: 179000,
     stock: 12,
+    tallas: ['S', 'M', 'L', 'XL', '2XL'],
     descripcion: 'Camiseta local del Liverpool FC, rojo característico de Anfield.',
     imagenUrl: '/images/LIVERPOL.jpg',
     idCategoria: 1,
@@ -69,6 +77,7 @@ const productos = [
     oem: 'NIK-PSG-2425',
     precio: 195000,
     stock: 4,
+    tallas: ['M', 'L', 'XL'],
     descripcion: 'Camiseta local del PSG con la banda central Hechter.',
     imagenUrl: '/images/PSG.jpg',
     idCategoria: 1,
@@ -82,6 +91,7 @@ const productos = [
     oem: 'ADI-JUV-2425',
     precio: 175000,
     stock: 0,
+    tallas: [],
     descripcion: 'Camiseta local de la Juventus, franjas blanquinegras.',
     imagenUrl: '/images/JUVENTUS.jpg',
     idCategoria: 1,
@@ -95,6 +105,7 @@ const productos = [
     oem: 'BRA-RETRO-70',
     precio: 172000,
     stock: 9,
+    tallas: ['S', 'M', 'L'],
     descripcion: 'Amarillo canarinho clásico. Edición retro de colección.',
     imagenUrl: '/images/BrazilR.jpeg',
     idCategoria: 2,
@@ -108,6 +119,7 @@ const productos = [
     oem: 'NIK-INT-2425',
     precio: 178000,
     stock: 15,
+    tallas: ['S', 'M', 'L', 'XL', '2XL'],
     descripcion: 'Camiseta local del Inter, nerazzurri.',
     imagenUrl: '/images/INTER.jpg',
     idCategoria: 1,

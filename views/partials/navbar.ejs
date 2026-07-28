@@ -5,19 +5,23 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark border-bottom box-shadow fixed-top" style="background-color: var(--color-fondo-oscuro, #121212);">
         <div class="container-fluid">
-            <a class="navbar-brand logo" href="/">Piel de Campeón</a>
+            <a class="navbar-brand logo marca-corona" href="/">
+                <i class="bi bi-award-fill corona"></i>
+                <span>Piel de <strong>Campeón</strong></span>
+            </a>
 
             <%#
-              Carrito y botón de menú van juntos y FUERA del collapse: en una tienda
-              el carrito tiene que verse siempre, no escondido tras el menú.
+              En móvil las secciones viven en la barra inferior, así que aquí
+              solo queda la marca, centrada. El carrito y el menú aparecen a
+              partir de lg, donde ya no hay barra inferior.
             %>
             <div class="d-flex align-items-center gap-1 order-lg-last">
-                <a href="/carrito" class="nav-cart position-relative" aria-label="Ver mi carrito">
+                <a href="/carrito" class="nav-cart position-relative d-none d-lg-inline-flex" aria-label="Ver mi carrito">
                     <i class="bi bi-cart"></i>
-                    <span id="cart-badge" class="position-absolute badge rounded-pill bg-danger">0</span>
+                    <span id="cart-badge" class="position-absolute badge rounded-pill">0</span>
                 </a>
 
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Abrir navegación">
+                <button class="navbar-toggler d-none d-lg-inline-flex" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Abrir navegación">
                     <span class="navbar-toggler-icon"></span>
                 </button>
             </div>
@@ -29,7 +33,7 @@
                             <a class="nav-link text-light" href="/">Inicio</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link text-light" href="/catalogo">Tienda</a>
+                            <a class="nav-link text-light" href="/">Tienda</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link text-light" href="/sobre-nosotros">Sobre Nosotros</a>

@@ -46,7 +46,7 @@ body .nav-cart {
 
 body .nav-cart:hover,
 body .nav-cart:focus {
-    color: var(--color-primario, #d90429);
+    color: var(--color-primario, #d9b04a);
 }
 
 body .nav-cart #cart-badge {
@@ -68,10 +68,20 @@ body .navbar-toggler {
 }
 
 body .navbar-toggler:focus {
-    box-shadow: 0 0 0 3px rgba(217, 4, 41, 0.4);
+    box-shadow: 0 0 0 3px rgba(217, 176, 74, 0.4);
 }
 
 @media (max-width: 991.98px) {
+    /* En móvil la barra superior solo lleva la marca: centrada, porque no
+       hay nada más que compita por el espacio. */
+    body .navbar .container-fluid {
+        justify-content: center;
+    }
+
+    body .navbar-brand.marca-corona {
+        margin-right: 0;
+    }
+
     /* Menú desplegado: cada enlace como fila cómoda de tocar, no texto apretado. */
     body .navbar-collapse {
         padding-top: 0.5rem;
@@ -319,10 +329,12 @@ body .navbar-toggler:focus {
    y descoloque toda la página.
    ========================================================================== */
 @media (max-width: 767.98px) {
-    body input,
+    /* Solo campos de escritura. Casillas, interruptores y deslizadores tienen
+       su propio tamaño: aplicarles min-height los deforma en pastillas altas. */
+    body input:not([type="checkbox"]):not([type="radio"]):not([type="range"]),
     body select,
     body textarea,
-    body .form-control,
+    body .form-control:not(.form-check-input),
     body .form-select {
         font-size: 16px;
         min-height: 48px;
@@ -337,18 +349,136 @@ body .navbar-toggler:focus {
    8. Catálogo, guía de tallas y marcas
    ========================================================================== */
 @media (max-width: 767.98px) {
-    /* Cabecera del catálogo: 380px de alto se comían la primera pantalla. */
-    body .store-hero {
-        height: 220px;
+    /* Cabecera del catálogo: en móvil el carrusel se queda más compacto para
+       que las camisetas aparezcan sin tener que hacer scroll. */
+    body .store-hero .carousel-item {
+        height: 360px;
     }
 
-    body .store-hero h1 {
-        font-size: clamp(1.9rem, 9vw, 2.6rem);
+    body .store-hero-contenido {
+        padding-bottom: 3rem;
     }
 
-    body .store-hero .lead {
-        font-size: 0.95rem;
-        margin-bottom: 0;
+    body .store-hero p {
+        font-size: .92rem;
+    }
+
+    /* El contenedor del catálogo pegado a la cabecera: sin este ajuste queda
+       una franja negra vacía entre el carrusel y las camisetas. */
+    body .store-hero + .container {
+        padding-top: 0 !important;
+    }
+
+    /* La barra de control se queda pegada arriba al hacer scroll. */
+    body .barra-catalogo {
+        position: sticky;
+        top: 62px;
+        z-index: 1020;
+        background: var(--color-fondo-oscuro, #121212);
+        margin-inline: -0.75rem;
+        padding: 0.75rem;
+        margin-bottom: .75rem;
+    }
+
+    body .barra-catalogo .conteo-resultados {
+        font-size: .85rem;
+    }
+
+    body .selector-orden .form-select {
+        padding-left: 2.6rem;
+        padding-right: 1.6rem;
+        font-size: .9rem;
+        background-position: right .5rem center;
+    }
+
+    /* Panel de filtros como hoja inferior: sale desde abajo, donde está el
+       pulgar, y deja ver parte del catálogo detrás. */
+    body .panel-filtros.offcanvas-bottom {
+        height: 88svh;
+        border-top-left-radius: 20px;
+        border-top-right-radius: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    body .panel-filtros .offcanvas-header {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 1rem 1.25rem;
+    }
+
+    /* El .btn-close de Bootstrap mide 32px: por debajo del mínimo táctil. */
+    body .panel-filtros .btn-close {
+        width: 44px;
+        height: 44px;
+        margin: 0;
+        background-size: 16px;
+        opacity: .85;
+    }
+
+    /* Tirador: pista visual de que el panel se arrastra/cierra. */
+    body .panel-filtros .offcanvas-header::before {
+        content: "";
+        position: absolute;
+        top: 8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 40px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.25);
+    }
+
+    body .panel-filtros .offcanvas-body {
+        padding: 1.25rem;
+        /* deja sitio al pie fijo para que el último filtro no quede tapado */
+        padding-bottom: 7rem;
+        /* Y que el navegador cuente con ese pie al desplazar un control hasta
+           la vista: sin esto, al enfocar el último filtro queda justo debajo
+           del pie y el toque aterriza en el botón equivocado. */
+        scroll-padding-bottom: 7rem;
+    }
+
+    /* Pie con las acciones, siempre visible sobre el contenido. */
+    body .panel-filtros .offcanvas-footer {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        display: flex;
+        gap: 0.75rem;
+        padding: 0.9rem 1.25rem calc(0.9rem + env(safe-area-inset-bottom));
+        background: #181818;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    body .panel-filtros .offcanvas-footer .btn {
+        min-height: 48px;
+        font-weight: 600;
+    }
+
+
+    body .barra-catalogo .conteo-resultados {
+        font-size: 0.85rem;
+    }
+
+
+
+
+    /* El toast de "añadido al carrito" vive abajo a la derecha, justo encima
+       de los botones "Añadir al carrito" de las tarjetas: durante los segundos
+       que dura, los toques aterrizan en él. En móvil va arriba y centrado. */
+    body .toast-container.position-fixed.bottom-0 {
+        top: 74px;
+        bottom: auto !important;
+        left: 0;
+        right: 0 !important;
+        display: flex;
+        justify-content: center;
+        padding: 0 1rem !important;
+    }
+
+    body .toast-container.position-fixed.bottom-0 .toast {
+        width: 100%;
+        max-width: 420px;
     }
 
     body .size-chart-wrapper {
@@ -356,18 +486,50 @@ body .navbar-toggler:focus {
         border-radius: 14px;
     }
 
+    /* "Ver tabla completa": en la columna va pegado a la izquierda y con el
+       texto centrado alrededor queda descolgado. width:fit-content evita que
+       se estire de lado a lado, y los márgenes automáticos lo centran. */
+    body .location-section .btn {
+        display: block;
+        width: fit-content;
+        margin-inline: auto;
+    }
+
     body .location-section .row {
         --bs-gutter-y: 2rem;
     }
 
+    body .brand-card {
+        height: 92px;
+        padding: 16px;
+    }
+
     body .brand-card img {
-        max-width: 110px;
+        max-height: 40px;
     }
 }
 
 /* ==========================================================================
    9. Accesibilidad: respetar "reducir movimiento" del sistema
    ========================================================================== */
+/*
+  Pantallas muy estrechas (un Galaxy Fold cerrado son 280px): las dos pastillas
+  de la barra de control no caben en una fila y "camisetas" se recortaba a la
+  mitad. Apiladas se leen enteras.
+*/
+@media (max-width: 359.98px) {
+    body .barra-catalogo {
+        flex-direction: column;
+        align-items: stretch;
+        gap: .5rem;
+    }
+
+    body .pastilla-filtros,
+    body .selector-orden {
+        min-height: 48px;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

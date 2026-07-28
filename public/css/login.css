@@ -1,38 +1,679 @@
-﻿body {
-    background-color: #f8f9fa; /* Fondo claro */
-    font-family: 'Poppins', sans-serif;
-    min-height: 100vh;
+/*
+  Página de inicio de sesión.
+
+  Escritorio: una tarjeta con dos paneles, marca a la izquierda y formulario a
+  la derecha. Móvil: se apilan, y el panel de marca se reduce a lo esencial
+  para que el formulario quede a la vista sin hacer scroll.
+
+  (El contenido anterior de este archivo era del proyecto de repuestos —fondo
+  claro y azul #0f2182— y no lo enlazaba ninguna vista.)
+*/
+
+:root {
+    --lg-oro: #d9b04a;
+    --lg-fondo: #0d0d0d;
+    --lg-tarjeta: #141414;
+    --lg-panel: #171717;
+    --lg-borde: rgba(255, 255, 255, .09);
+    --lg-texto: #f5f5f7;
+    --lg-suave: #a0a0a0;
+}
+
+.login-pagina {
+    min-height: 100svh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: var(--lg-fondo);
+}
+
+.login-tarjeta {
+    display: grid;
+    width: 100%;
+    max-width: 1080px;
+    /* Sin esto, los hijos de una rejilla no pueden encogerse por debajo del
+       ancho mínimo de su contenido: el panel del formulario exigía 364px y en
+       pantallas de 280-360px se salía de la tarjeta y quedaba recortado. */
+    grid-auto-columns: minmax(0, 1fr);
+    background: var(--lg-tarjeta);
+    border: 1px solid var(--lg-borde);
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 24px 60px rgba(0, 0, 0, .55);
+}
+
+/* ==========================================================================
+   Panel de marca
+   ========================================================================== */
+/* Los dos paneles son hijos de la rejilla: se les permite encoger. */
+.login-marca,
+.login-panel {
+    min-width: 0;
+}
+
+.login-marca {
+    position: relative;
+    display: flex;
+    align-items: center;
+    padding: 3rem 2.5rem;
+    min-height: 520px;
+}
+
+.login-marca-fondo {
+    position: absolute;
+    inset: 0;
+    /* JPG para navegadores antiguos; debajo, la versión WebP más ligera.
+       Es la foto que se aportó para el login (1,8 MB en PNG, aquí 130 KB). */
+    background: url('/images/login-camiseta.jpg') center top/cover no-repeat;
+    background-image: image-set(url('/images/login-camiseta.webp') type('image/webp'),
+                                url('/images/login-camiseta.jpg') type('image/jpeg'));
+}
+
+/* Velo oscuro: sin él, el texto blanco no se lee sobre la foto. */
+.login-marca-fondo::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(160deg, rgba(0, 0, 0, .62) 0%, rgba(0, 0, 0, .86) 55%, rgba(0, 0, 0, .94) 100%);
+}
+
+.login-marca-contenido {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    text-align: center;
+}
+
+.login-corona {
+    display: block;
+    width: 58px;
+    height: 40px;
+    margin: 0 auto 1.25rem;
+    fill: var(--lg-oro);
+    filter: drop-shadow(0 0 14px rgba(217, 176, 74, .45));
+}
+
+.login-bienvenida {
+    margin: 0 0 1rem;
+    color: #fff;
+    font-size: clamp(1.4rem, 2.6vw, 1.9rem);
+    font-weight: 700;
+    line-height: 1.25;
+}
+
+.login-bienvenida span {
+    display: block;
+    color: var(--lg-oro);
+    font-size: 1.3em;
+    font-weight: 800;
+}
+
+.login-lema {
+    margin: 0 0 2.5rem;
+    color: #d4d4d4;
+    line-height: 1.6;
+}
+
+/* --- Garantías --- */
+.login-garantias {
     display: flex;
     justify-content: center;
+    gap: 1.25rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.login-garantias li {
+    flex: 1;
+    max-width: 150px;
+    text-align: center;
+}
+
+.login-garantias .bi {
+    display: block;
+    font-size: 1.5rem;
+    color: var(--lg-oro);
+    margin-bottom: .5rem;
+}
+
+.login-garantias strong {
+    display: block;
+    color: #fff;
+    font-size: .85rem;
+    font-weight: 600;
+}
+
+.login-garantias small {
+    color: var(--lg-suave);
+    font-size: .75rem;
+    line-height: 1.35;
+}
+
+/* ==========================================================================
+   Panel del formulario
+   ========================================================================== */
+.login-panel {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 3rem 2.5rem;
+    background: var(--lg-panel);
+}
+
+.login-emblema {
+    display: flex;
     align-items: center;
+    justify-content: center;
+    width: 72px;
+    height: 72px;
+    margin: 0 auto 1.5rem;
+    border: 2px solid var(--lg-oro);
+    border-radius: 50%;
+    color: var(--lg-oro);
+    font-size: 1.9rem;
+    box-shadow: 0 0 22px rgba(217, 176, 74, .28);
 }
 
-.login-card {
-    background: #fff;
-    padding: 2rem;
+.login-titulo {
+    margin: 0;
+    text-align: center;
+    color: #fff;
+    font-size: 1.7rem;
+    font-weight: 700;
+}
+
+.login-subtitulo {
+    margin: .35rem 0 2rem;
+    text-align: center;
+    color: var(--lg-suave);
+}
+
+.login-aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: .5rem;
+    margin-bottom: 1.5rem;
+    padding: .8rem 1rem;
+    border: 1px solid rgba(217, 176, 74, .35);
     border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: rgba(217, 176, 74, .1);
+    color: #e8d09a;
+    font-size: .88rem;
+}
+
+.login-aviso .bi {
+    color: var(--lg-oro);
+    flex: none;
+    margin-top: .1rem;
+}
+
+/* --- Campos --- */
+.login-campo {
+    position: relative;
+    /* Hueco suficiente para que el mensaje de error quepa debajo sin empujar
+       nada: ver el comentario de .login-error. */
+    margin-bottom: 1.6rem;
+}
+
+.login-campo > label {
+    display: block;
+    margin-bottom: .5rem;
+    color: var(--lg-texto);
+    font-size: .88rem;
+    font-weight: 600;
+}
+
+.login-caja {
+    display: flex;
+    align-items: center;
+    background: #0f0f0f;
+    border: 1px solid var(--lg-borde);
+    border-radius: 12px;
+    transition: border-color .2s ease, box-shadow .2s ease;
+}
+
+.login-caja:focus-within {
+    border-color: var(--lg-oro);
+    box-shadow: 0 0 0 3px rgba(217, 176, 74, .2);
+}
+
+/* El icono va en su propio recuadro, como en el diseño. */
+.login-icono {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    flex: none;
+    margin: 5px;
+    border-radius: 9px;
+    background: rgba(217, 176, 74, .12);
+    color: var(--lg-oro);
+    font-size: 1.05rem;
+}
+
+.login-caja input {
+    flex: 1;
+    /* Un <input> pide ~20 caracteres de ancho por defecto (218px). En un
+       contenedor flex eso es un suelo que no se puede bajar sin min-width:0,
+       y era lo que desbordaba la tarjeta en pantallas estrechas. */
+    min-width: 0;
     width: 100%;
-    max-width: 500px;
+    /* 16px evita que iOS haga zoom al enfocar el campo */
+    font-size: 16px;
+    padding: .9rem .5rem;
+    background: none;
+    border: none;
+    color: var(--lg-texto);
 }
 
-.external-login {
-    background: #fff;
-    padding: 1.5rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+.login-caja input:focus {
+    outline: none;
 }
 
-.form-floating .form-control {
-    border-radius: 5px;
+.login-caja input::placeholder {
+    color: #666;
 }
 
-.btn-primary {
-    background-color: #0f2182;
-    border-color: #0f2182;
+/*
+  Visto de campo correcto. Se resuelve solo con CSS: `:valid` ya sabe si el
+  correo está bien escrito, y `:not(:placeholder-shown)` evita que aparezca con
+  el campo vacío. Sin JavaScript de por medio.
+*/
+.login-valido {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    flex: none;
+    margin-right: 5px;
+    color: var(--lg-oro);
+    font-size: 1.15rem;
+    opacity: 0;
+    transform: scale(.7);
+    transition: opacity .2s ease, transform .2s ease;
+    pointer-events: none;
 }
 
-    .btn-primary:hover {
-        background-color: #0d1a68;
-        border-color: #0d1a68;
+.login-caja input:valid:not(:placeholder-shown) ~ .login-valido {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.login-ver-clave {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    flex: none;
+    margin-right: 5px;
+    background: none;
+    border: none;
+    border-radius: 9px;
+    color: var(--lg-suave);
+    font-size: 1.05rem;
+    cursor: pointer;
+}
+
+.login-ver-clave:hover,
+.login-ver-clave:focus-visible {
+    color: var(--lg-oro);
+}
+
+/* Campo con error: el borde rojo no basta para quien no distingue colores,
+   por eso además se escribe el motivo debajo. */
+.login-campo.con-error .login-caja {
+    border-color: #e0645f;
+}
+
+/*
+  El mensaje va colocado en el hueco que ya separa un campo del siguiente, no
+  en el flujo normal.
+
+  Motivo: cuando aparecía con display:block empujaba hacia abajo todo lo que
+  venía después. Si el usuario tocaba "Ingresar" con un campo enfocado, el
+  blur mostraba el error, el botón se desplazaba y el toque caía en el vacío:
+  parecía que el botón no funcionaba.
+*/
+.login-error {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin: .25rem 0 0;
+    color: #ff8a85;
+    font-size: .82rem;
+    opacity: 0;
+    transition: opacity .15s ease;
+    pointer-events: none;
+}
+
+.login-campo.con-error .login-error {
+    opacity: 1;
+}
+
+/* --- Recuérdame y enlace de contraseña --- */
+.login-fila {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.login-recuerdame {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0;
+    padding: 0;
+    min-height: 44px;
+}
+
+.login-recuerdame .form-check-input {
+    width: 1.15rem;
+    height: 1.15rem;
+    margin: 0;
+    flex: none;
+    background-color: #0f0f0f;
+    border-color: #4a4a4a;
+    cursor: pointer;
+}
+
+.login-recuerdame .form-check-input:checked {
+    background-color: var(--lg-oro);
+    border-color: var(--lg-oro);
+}
+
+.login-recuerdame .form-check-input:focus {
+    box-shadow: 0 0 0 3px rgba(217, 176, 74, .3);
+}
+
+.login-recuerdame .form-check-label {
+    color: var(--lg-texto);
+    cursor: pointer;
+    font-size: .92rem;
+}
+
+.login-olvide {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    color: var(--lg-oro);
+    font-size: .88rem;
+}
+
+.login-olvide:hover {
+    color: #e9c66d;
+}
+
+/* --- Botón principal --- */
+.login-entrar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: .6rem;
+    width: 100%;
+    min-height: 54px;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #e0bc5c, #c69a2e);
+    /* Texto oscuro: sobre dorado, el blanco no llega al contraste mínimo. */
+    color: #241c00;
+    font-size: 1.05rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter .2s ease, transform .1s ease;
+}
+
+.login-entrar:hover {
+    filter: brightness(1.07);
+}
+
+.login-entrar:active {
+    transform: scale(.99);
+}
+
+/* --- Pie del panel --- */
+.login-registro {
+    margin: 1.75rem 0 0;
+    text-align: center;
+    color: var(--lg-suave);
+    font-size: .92rem;
+}
+
+/* inline-flex con min-height: como enlace suelto medía 20px de alto, por
+   debajo del mínimo cómodo de tocar con el dedo. */
+.login-registro a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: .25rem;
+    color: var(--lg-oro);
+    font-weight: 700;
+}
+
+.login-volver {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: .35rem;
+    margin-top: 1rem;
+    min-height: 44px;
+    color: var(--lg-suave);
+    font-size: .88rem;
+}
+
+.login-volver:hover {
+    color: var(--lg-texto);
+}
+
+/* ==========================================================================
+   Escritorio: los dos paneles, lado a lado
+   ========================================================================== */
+@media (min-width: 992px) {
+    .login-tarjeta {
+        grid-template-columns: 1fr 1fr;
     }
+}
+
+/* ==========================================================================
+   Móvil: foto arriba, panel en escudo y marco dorado
+
+   Sigue el diseño aportado: la camiseta ocupa la parte superior, un panel con
+   forma de escudo la solapa con la corona en el vértice, y todo va dentro de
+   un marco dorado doble.
+   ========================================================================== */
+@media (max-width: 991.98px) {
+    .login-pagina {
+        padding: 10px;
+        align-items: stretch;
+        background: #080808;
+    }
+
+    .login-tarjeta {
+        position: relative;
+        min-height: calc(100svh - 20px);
+        align-content: start;
+        border: 1px solid rgba(217, 176, 74, .55);
+        border-radius: 20px;
+        background: #0d0d0d;
+        box-shadow: 0 0 40px rgba(217, 176, 74, .08);
+    }
+
+    /* Segundo filete dorado por dentro: es lo que da el aire de marco. */
+    .login-tarjeta::before {
+        content: "";
+        position: absolute;
+        inset: 7px;
+        border: 1px solid rgba(217, 176, 74, .28);
+        border-radius: 14px;
+        pointer-events: none;
+        z-index: 4;
+    }
+
+    /* --- Foto de la camiseta --- */
+    .login-marca {
+        display: block;
+        min-height: 0;
+        padding: 0;
+    }
+
+    .login-marca-fondo {
+        position: relative;
+        height: 42svh;
+        min-height: 260px;
+        border-radius: 19px 19px 0 0;
+        /* Encuadre un poco más abajo: así entran el cuello y el escudo de la
+           camiseta, que es lo que se ve en el diseño. */
+        background-position: center 22%;
+    }
+
+    /* Degradado solo abajo: la camiseta se ve nítida y el texto que viene
+       después no arranca sobre un borde duro. */
+    .login-marca-fondo::after {
+        background: linear-gradient(to bottom, transparent 45%, rgba(13, 13, 13, .75) 80%, #0d0d0d 100%);
+    }
+
+    /* --- Panel en escudo --- */
+    .login-marca-contenido {
+        position: relative;
+        z-index: 3;
+        /* Sube para solapar la foto: el vértice queda dentro de la imagen. */
+        margin-top: -74px;
+        padding: 3.25rem 1.5rem 1.75rem;
+        background: #101010;
+        /* Pentágono: dos esquinas arriba y un vértice centrado. */
+        clip-path: polygon(0 74px, 50% 0, 100% 74px, 100% 100%, 0 100%);
+        /* El panel y la foto son casi del mismo negro, así que sin un filete
+           el vértice no se distingue. drop-shadow sigue la silueta recortada,
+           que es justo lo que un borde normal no puede hacer. */
+        filter: drop-shadow(0 -1.5px 0 rgba(217, 176, 74, .6));
+    }
+
+    .login-corona {
+        width: 52px;
+        height: 36px;
+        margin-bottom: .75rem;
+    }
+
+    /* Tipografía fluida: en un Galaxy Fold cerrado (280px) "Piel de Campeón"
+       ocupaba tres líneas con el tamaño fijo. */
+    .login-bienvenida {
+        font-size: clamp(1.05rem, 5vw, 1.4rem);
+    }
+
+    .login-bienvenida span {
+        font-size: 1.35em;
+    }
+
+    .login-lema {
+        margin-bottom: 0;
+        font-size: clamp(.8rem, 3.6vw, .92rem);
+    }
+
+    /* En este diseño las garantías no aparecen: el formulario manda. */
+    .login-garantias {
+        display: none;
+    }
+
+    /* --- Formulario --- */
+    .login-panel {
+        padding: 1.5rem 1.5rem 2.5rem;
+        background: #0d0d0d;
+    }
+
+    /* El emblema circular lo sustituye la corona del escudo. */
+    .login-emblema {
+        display: none;
+    }
+
+    /* Título dorado con filetes a los lados. */
+    .login-titulo {
+        display: flex;
+        align-items: center;
+        gap: .9rem;
+        color: var(--lg-oro);
+        font-size: 1.5rem;
+    }
+
+    .login-titulo::before,
+    .login-titulo::after {
+        content: "";
+        flex: 1;
+        height: 2px;
+        background: linear-gradient(90deg, transparent, rgba(217, 176, 74, .65));
+    }
+
+    .login-titulo::after {
+        background: linear-gradient(90deg, rgba(217, 176, 74, .65), transparent);
+    }
+
+    .login-subtitulo {
+        margin-bottom: 1.75rem;
+    }
+
+    /* Iconos con contorno dorado en vez de fondo relleno. */
+    .login-icono {
+        background: none;
+        border: 1px solid rgba(217, 176, 74, .55);
+    }
+
+    .login-caja {
+        background: rgba(255, 255, 255, .02);
+    }
+
+    /* Botón con las esquinas cortadas, como en el diseño. */
+    .login-entrar {
+        clip-path: polygon(14px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 14px),
+                           calc(100% - 14px) 100%, 14px 100%, 0 calc(100% - 14px), 0 14px);
+        box-shadow: 0 6px 22px rgba(217, 176, 74, .25);
+    }
+}
+
+/*
+  Pantallas bajas (móvil apaisado, iPhone SE): la foto no puede quedarse con
+  media pantalla o el formulario cae demasiado abajo.
+*/
+@media (max-width: 991.98px) and (max-height: 700px) {
+    .login-marca-fondo {
+        height: 30svh;
+        min-height: 170px;
+    }
+
+    .login-marca-contenido {
+        margin-top: -58px;
+        padding-top: 2.5rem;
+        clip-path: polygon(0 58px, 50% 0, 100% 58px, 100% 100%, 0 100%);
+    }
+
+    .login-corona {
+        width: 42px;
+        height: 29px;
+        margin-bottom: .5rem;
+    }
+
+    .login-panel {
+        padding-top: 1.25rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .login-marca-fondo {
+        height: 36svh;
+        min-height: 220px;
+    }
+
+    .login-panel {
+        padding: 1.25rem 1.15rem 2.25rem;
+    }
+
+    .login-titulo {
+        font-size: 1.3rem;
+        gap: .6rem;
+    }
+}

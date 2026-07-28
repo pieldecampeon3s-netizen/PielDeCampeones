@@ -1,146 +1,153 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title><%= title %> - Piel de Campeón</title>
+<%#
+  Inicio de sesión. Dos paneles: la marca a la izquierda y el formulario a la
+  derecha. En móvil se apilan, con el panel de marca reducido para que el
+  formulario se vea sin hacer scroll.
 
-    <!-- Librerías de Estilos -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  Antes esta vista traía su propio <html> y cargaba Bootstrap desde un CDN;
+  ahora pasa por el layout con `soloContenido`, que le da las librerías locales
+  sin navbar ni pie.
 
-    <!-- Estilos Personalizados para la Página de Login -->
-    <style>
-        :root {
-            --color-primario: #d90429;
-            --color-texto-principal: #f5f5f7;
-            --color-texto-secundario: #a8a8a8;
-        }
+  OJO: todavía no hay autenticación real. El formulario envía a
+  POST /account/login, que hoy solo responde con un aviso. Cuando conectes
+  Supabase Auth, esa ruta es el único sitio que hay que tocar.
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-        }
+  Espera (opcionales): aviso, valores
+%>
+<div class="login-pagina">
+    <div class="login-tarjeta">
 
-        .login-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            background-image: linear-gradient(rgba(18, 18, 18, 0.85), rgba(18, 18, 18, 0.95)), url('/images/hero-main-bg.jpg');
-            background-size: cover;
-            background-position: center;
-            padding: 2rem;
-        }
+        <%# --- Panel de marca --- %>
+        <aside class="login-marca">
+            <div class="login-marca-fondo" aria-hidden="true"></div>
 
-        .login-card {
-            max-width: 450px;
-            width: 100%;
-            background: rgba(30, 30, 30, 0.75);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 1.5rem;
-            padding: 2.5rem;
-            color: var(--color-texto-principal);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
-        }
+            <div class="login-marca-contenido">
+                <%# Corona dibujada a mano: el icono de Bootstrap más parecido
+                    es una medalla, y en el diseño es una corona de verdad. %>
+                <svg class="login-corona" viewBox="0 0 64 44" aria-hidden="true" focusable="false">
+                    <path d="M4 40h56l-4-28-14 10L32 4 18 22 6 12z" />
+                    <circle cx="4" cy="10" r="4" />
+                    <circle cx="32" cy="2" r="4" />
+                    <circle cx="60" cy="10" r="4" />
+                </svg>
 
-            .login-card h2 {
-                font-weight: 800;
-            }
+                <h1 class="login-bienvenida">
+                    Bienvenido a
+                    <span>Piel de Campeón</span>
+                </h1>
 
-            .login-card .form-floating > .form-control {
-                background-color: rgba(255, 255, 255, 0.05);
-                border-color: rgba(255, 255, 255, 0.2);
-                color: #fff;
-            }
+                <p class="login-lema">
+                    Tu tienda oficial de camisetas<br>
+                    de los mejores clubes del mundo
+                </p>
 
-                .login-card .form-floating > .form-control:focus {
-                    background-color: rgba(255, 255, 255, 0.1);
-                    border-color: var(--color-primario);
-                    box-shadow: none;
-                }
-
-            .login-card .form-floating > label {
-                color: var(--color-texto-secundario);
-            }
-
-            .login-card .form-check-label {
-                color: var(--color-texto-secundario);
-            }
-
-            .login-card .btn-primary {
-                background-color: var(--color-primario);
-                border: none;
-                font-weight: 600;
-                padding: 0.75rem;
-                border-radius: 0.5rem;
-                transition: background-color 0.2s ease;
-            }
-
-                .login-card .btn-primary:hover {
-                    background-color: #b80322;
-                }
-
-            .login-card .small-links a {
-                color: var(--color-texto-secundario);
-                text-decoration: none;
-                transition: color 0.2s ease;
-            }
-
-                .login-card .small-links a:hover {
-                    color: #fff;
-                    text-decoration: underline;
-                }
-    </style>
-</head>
-<body>
-    <div class="login-container">
-        <div class="login-card">
-            <div class="text-center mb-4">
-                <h2 class="fw-bold">Bienvenido a Piel de Campeón</h2>
-                <p class="text-white-50">Utiliza tu cuenta para ingresar</p>
+                <ul class="login-garantias">
+                    <li>
+                        <i class="bi bi-shield-check" aria-hidden="true"></i>
+                        <strong>Compra segura</strong>
+                        <small>Protegemos tus datos</small>
+                    </li>
+                    <li>
+                        <i class="bi bi-patch-check" aria-hidden="true"></i>
+                        <strong>Productos oficiales</strong>
+                        <small>Calidad garantizada</small>
+                    </li>
+                    <li>
+                        <i class="bi bi-headset" aria-hidden="true"></i>
+                        <strong>Atención 24/7</strong>
+                        <small>Estamos para ti</small>
+                    </li>
+                </ul>
             </div>
+        </aside>
 
-            <section>
-                <form action="/account/login" method="post">
-                    <div class="text-danger mb-3" role="alert"></div>
+        <%# --- Formulario --- %>
+        <main class="login-panel">
 
-                    <div class="form-floating mb-3">
-                        <input name="email" id="email" class="form-control" autocomplete="username" aria-required="true" placeholder="nombre@ejemplo.com" />
-                        <label for="email" class="form-label"></label>
-                        <span class="text-danger"><%= (errores && errores.email) || '' %></span>
+            <span class="login-emblema" aria-hidden="true">
+                <i class="bi bi-person-badge"></i>
+            </span>
+
+            <h2 class="login-titulo">Iniciar sesión</h2>
+            <p class="login-subtitulo">Utiliza tu cuenta para continuar</p>
+
+            <% if (typeof aviso !== 'undefined' && aviso) { %>
+                <p class="login-aviso" role="status">
+                    <i class="bi bi-info-circle-fill"></i> <%= aviso %>
+                </p>
+            <% } %>
+
+            <form action="/account/login" method="post" id="formLogin" novalidate>
+
+                <div class="login-campo">
+                    <label for="email">Correo electrónico</label>
+                    <div class="login-caja">
+                        <span class="login-icono"><i class="bi bi-envelope"></i></span>
+                        <input type="email"
+                               id="email"
+                               name="email"
+                               placeholder="ejemplo@correo.com"
+                               autocomplete="username"
+                               value="<%= (typeof valores !== 'undefined' && valores.email) || '' %>"
+                               required>
+
+                        <%# Visto dorado: aparece solo cuando el correo está
+                            bien escrito. Va después del input para que el CSS
+                            pueda reaccionar a su validez. %>
+                        <span class="login-valido" aria-hidden="true">
+                            <i class="bi bi-check-circle"></i>
+                        </span>
+                    </div>
+                    <p class="login-error" data-error-de="email"></p>
+                </div>
+
+                <div class="login-campo">
+                    <label for="password">Contraseña</label>
+                    <div class="login-caja">
+                        <span class="login-icono"><i class="bi bi-lock"></i></span>
+                        <input type="password"
+                               id="password"
+                               name="password"
+                               placeholder="••••••••"
+                               autocomplete="current-password"
+                               required>
+                        <button type="button"
+                                class="login-ver-clave"
+                                id="verClave"
+                                aria-label="Mostrar la contraseña"
+                                aria-pressed="false">
+                            <i class="bi bi-eye-slash"></i>
+                        </button>
+                    </div>
+                    <p class="login-error" data-error-de="password"></p>
+                </div>
+
+                <div class="login-fila">
+                    <div class="form-check login-recuerdame">
+                        <input class="form-check-input"
+                               type="checkbox"
+                               id="rememberMe"
+                               name="rememberMe"
+                               value="1">
+                        <label class="form-check-label" for="rememberMe">Recuérdame</label>
                     </div>
 
-                    <div class="form-floating mb-3">
-                        <input name="password" id="password" class="form-control" type="password" autocomplete="current-password" aria-required="true" placeholder="contraseña" />
-                        <label for="password" class="form-label"></label>
-                        <span class="text-danger"><%= (errores && errores.password) || '' %></span>
-                    </div>
+                    <a href="/account/recuperar" class="login-olvide">¿Olvidaste tu contraseña?</a>
+                </div>
 
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" />
-                        <label for="rememberMe" class="form-check-label">
-                            Recuérdame
-                        </label>
-                    </div>
+                <button type="submit" class="login-entrar">
+                    Ingresar
+                    <i class="bi bi-arrow-right" aria-hidden="true"></i>
+                </button>
+            </form>
 
-                    <div class="d-grid gap-2">
-                        <button type="submit" class="btn btn-primary btn-lg">Ingresar</button>
-                    </div>
+            <p class="login-registro">
+                ¿No tienes una cuenta?
+                <a href="/account/registro">Crear cuenta</a>
+            </p>
 
-                    <div class="text-center mt-4 small-links">
-                        <a href="/account/recuperar">¿Olvidaste tu contraseña?</a>                    
-                        <span class="mx-2 text-white-50">|</span>
-                        <a href="/account/registro">Registrar una cuenta nueva</a>
-                    </div>
-                </form>
-            </section>
-        </div>
-    </div>    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="/js/site.js"></script>
-    </body>
-</html>
+            <a href="/" class="login-volver">
+                <i class="bi bi-chevron-left"></i> Volver a la tienda
+            </a>
+        </main>
+    </div>
+</div>

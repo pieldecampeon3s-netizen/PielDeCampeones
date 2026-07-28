@@ -1,0 +1,110 @@
+/*
+  Componentes compartidos entre varias vistas. Se carga en todas las páginas.
+
+  Motivo: `.btn-brand-accent` se usa en el catálogo, la ficha de producto, el
+  carrito y la confirmación, pero solo estaba definido dentro del <style> de
+  product-card.ejs. Es decir, en la ficha de producto y en la confirmación el
+  botón salía sin estilo. Aquí se define una sola vez.
+*/
+
+.btn-brand-accent {
+    background-color: var(--color-primario, #d9b04a);
+    color: #fff;
+    font-weight: 600;
+    padding: .6rem 1rem;
+    font-size: .9rem;
+    border: none;
+    transition: filter .3s ease;
+}
+
+.btn-brand-accent:hover,
+.btn-brand-accent:focus {
+    filter: brightness(1.2);
+    color: #fff;
+}
+
+.btn-brand-accent:disabled,
+.btn-brand-accent.disabled {
+    background-color: #3a3a3a;
+    color: #8a8a8a;
+    filter: none;
+}
+
+/* ==========================================================================
+   Botón primario
+   Bootstrap lo pinta de azul. Se usaba tal cual en el pie ("Suscribirme") y en
+   la portada ("Explorar Camisetas"), así que salían dos botones azules en una
+   tienda dorada. Aquí se alinea con la marca de una vez.
+   ========================================================================== */
+.btn-primary {
+    --bs-btn-bg: var(--color-primario, #d9b04a);
+    --bs-btn-border-color: var(--color-primario, #d9b04a);
+    --bs-btn-hover-bg: #e6c261;
+    --bs-btn-hover-border-color: #e6c261;
+    --bs-btn-active-bg: #c69a34;
+    --bs-btn-active-border-color: #c69a34;
+    --bs-btn-disabled-bg: #3a3a3a;
+    --bs-btn-disabled-border-color: #3a3a3a;
+    /* Texto oscuro: sobre dorado, el blanco no llega al contraste mínimo. */
+    --bs-btn-color: #1a1400;
+    --bs-btn-hover-color: #1a1400;
+    --bs-btn-active-color: #1a1400;
+    --bs-btn-disabled-color: #8a8a8a;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Autorrelleno del navegador
+
+   Cuando Chrome rellena un campo guardado le impone un fondo claro propio que
+   `background-color` no puede cambiar: sobre un formulario oscuro el campo se
+   volvía blanco de golpe. La única forma fiable de taparlo es una sombra
+   interior enorme, y pintar el texto con -webkit-text-fill-color.
+
+   Se aplica solo a los campos que van sobre fondo oscuro, no a todos.
+   ========================================================================== */
+.login-caja input:-webkit-autofill,
+.login-caja input:-webkit-autofill:hover,
+.login-caja input:-webkit-autofill:focus,
+.campo-caja input:-webkit-autofill,
+.campo-caja input:-webkit-autofill:hover,
+.campo-caja input:-webkit-autofill:focus,
+.campo-busqueda .form-control:-webkit-autofill,
+.footer-dark input:-webkit-autofill {
+    -webkit-text-fill-color: #f5f5f7;
+    caret-color: #f5f5f7;
+    box-shadow: inset 0 0 0 1000px #0f0f0f;
+    -webkit-box-shadow: inset 0 0 0 1000px #0f0f0f;
+    /* La transición larguísima evita el destello amarillo del primer instante,
+       antes de que la sombra tape el fondo del navegador. */
+    transition: background-color 9999s ease-in-out 0s;
+}
+
+/* ==========================================================================
+   Marca con corona
+   ========================================================================== */
+.marca-corona {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-weight: 600;
+    color: #fff !important;
+}
+
+.marca-corona strong {
+    color: var(--color-primario, #d9b04a);
+    font-weight: 700;
+}
+
+.marca-corona .corona {
+    color: var(--color-primario, #d9b04a);
+    font-size: 1.25rem;
+}
+
+/* La burbuja del carrito usaba bg-danger de Bootstrap; ahora sigue la marca. */
+#cart-badge {
+    background-color: var(--color-primario, #d9b04a) !important;
+    color: #1a1400;
+    top: 4px;
+    right: 2px;
+}

@@ -1,103 +1,65 @@
-<div class="product-card">
+<%#
+  Tarjeta de producto. Sus estilos viven en /css/catalogo.css, no aquí: este
+  parcial se repite una vez por producto y además se reinyecta al filtrar sin
+  recargar, así que un <style> propio se duplicaría en cada tarjeta.
+
+  Espera: producto, formatCOP, favoritos
+%>
+<% const esFavorito = (typeof favoritos !== 'undefined' ? favoritos : []).includes(producto.id); %>
+
+<div class="product-card <%= producto.stock > 0 ? '' : 'agotado' %>">
+
     <div class="product-card-image-container">
         <a href="/producto/<%= producto.id %>">
-            <img src="<%= producto.imagenUrl %>" alt="<%= producto.nombre %>">
+            <img src="<%= producto.imagenUrl %>"
+                 alt="<%= producto.nombre %>"
+                 loading="lazy"
+                 decoding="async">
         </a>
-    </div>
-    <div class="product-card-body">
-        <div class="product-oem"><%= producto.oem %></div>
-        <h5 class="product-name">
-            <a href="/producto/<%= producto.id %>" class="text-white text-decoration-none">
-                <%= producto.nombre %>
-            </a>
-        </h5>
-        <p class="product-price"><%= formatCOP(producto.precio) %></p>
-    </div>
-    <div class="product-card-footer mt-auto">
-        <button class="btn btn-brand-accent w-100 add-to-cart-btn"
-                data-producto-id="<%= producto.id %>"
-                data-cantidad="1">
-            <i class="bi bi-cart-plus me-2"></i>Añadir al Carrito
+
+        <%# Favorito. Va fuera del enlace para que tocarlo no abra el producto. %>
+        <button type="button"
+                class="btn-favorito <%= esFavorito ? 'activo' : '' %>"
+                data-favorito="<%= producto.id %>"
+                aria-pressed="<%= esFavorito %>"
+                aria-label="<%= esFavorito ? 'Quitar de favoritos' : 'Guardar en favoritos' %>">
+            <i class="bi bi-heart<%= esFavorito ? '-fill' : '' %>"></i>
         </button>
 
+        <% if (producto.stock === 0) { %>
+            <span class="etiqueta-stock etiqueta-agotado">Agotado</span>
+        <% } else if (producto.stock <= 10) { %>
+            <span class="etiqueta-stock etiqueta-ultimas">Últimas <%= producto.stock %></span>
+        <% } %>
+    </div>
+
+    <div class="product-card-body">
+        <h5 class="product-name">
+            <a href="/producto/<%= producto.id %>"><%= producto.nombre %></a>
+        </h5>
+
+        <p class="product-price"><%= formatCOP(producto.precio) %></p>
+
+        <% if (producto.stock <= 0) { %>
+            <span class="chip-talla chip-agotado">Sin stock</span>
+        <% } else if ((producto.tallas || []).length) { %>
+            <%# Abre la hoja de tallas: desde ahí se añade al carrito. %>
+            <button type="button"
+                    class="chip-talla elegir-talla-btn"
+                    data-producto-id="<%= producto.id %>"
+                    data-nombre="<%= producto.nombre %>"
+                    data-precio="<%= formatCOP(producto.precio) %>"
+                    data-imagen="<%= producto.imagenUrl %>"
+                    data-tallas="<%= producto.tallas.join(',') %>">
+                Talla: <strong>elegir</strong>
+            </button>
+        <% } else { %>
+            <button type="button"
+                    class="chip-talla add-to-cart-btn"
+                    data-producto-id="<%= producto.id %>"
+                    data-cantidad="1">
+                <i class="bi bi-cart-plus"></i> Añadir
+            </button>
+        <% } %>
     </div>
 </div>
-
-<style>
-    .product-card-body {
-        padding: 1rem;
-        flex-grow: 1;
-    }
-
-    .product-card-footer {
-        padding: 0 1rem 1rem 1rem;
-    }
-
-    .product-oem {
-        font-size: 0.8rem;
-        color: var(--color-texto-secundario, #A0A0A0);
-        text-transform: uppercase;
-    }
-
-    .product-name {
-        font-size: 1.1rem;
-        font-weight: 600;
-        margin: 0.25rem 0;
-        min-height: 3.3em;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-
-    .product-price {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: var(--color-primario, #E53559);
-        margin-bottom: 0.75rem;
-    }
-
-    .btn-brand-accent {
-        background-color: var(--color-primario);
-        color: #FFFFFF;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        padding: 0.6rem 1rem;
-        font-size: 0.9rem;
-    }
-
-        .btn-brand-accent:hover {
-            filter: brightness(1.2);
-        }
-
-    /* --- CONTENEDOR DE IMAGEN --- */
-    .product-card-image-container {
-        background-color: #FFFFFF;
-        border-radius: 8px;
-        padding: 0.5rem; /* Un padding un poco más pequeño */
-        margin-bottom: 1rem;
-        height: 140px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-        .product-card-image-container a {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-        }
-
-        /* Nos aseguramos de que la imagen se escale correctamente dentro del enlace */
-        .product-card-image-container img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain; /* 'contain' asegura que toda la imagen sea visible sin deformarse */
-            transition: transform 0.3s ease; /* Opcional: añade una suave transición */
-        }
-
-    .product-card:hover .product-card-image-container img {
-        transform: scale(1.05); /* Opcional: un sutil efecto de zoom al pasar el mouse */
-    }
-
-</style>
