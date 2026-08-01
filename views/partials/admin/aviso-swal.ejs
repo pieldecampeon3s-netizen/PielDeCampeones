@@ -1,0 +1,46 @@
+<%#
+  Dispara un aviso de SweetAlert2 según lo que la ruta haya calculado como
+  `toastExito` / `toastError` antes de renderizar. Nunca los dos a la vez.
+
+  `toastParam` es la clave de query string que trajo el éxito (?creado=,
+  ?editado=...): se quita de la URL con history.replaceState para que
+  recargar la página no dispare el aviso otra vez.
+
+  Los errores se muestran en un modal que hay que cerrar a mano (no se
+  autodescartan): a diferencia de un éxito, un error hay que leerlo.
+%>
+<% if ((typeof toastExito !== 'undefined' && toastExito) || (typeof toastError !== 'undefined' && toastError)) { %>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        <% if (typeof toastExito !== 'undefined' && toastExito) { %>
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: <%- JSON.stringify(toastExito) %>,
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+        });
+        <% } %>
+        <% if (typeof toastError !== 'undefined' && toastError) { %>
+        Swal.fire({
+            icon: 'error',
+            title: 'Algo salió mal',
+            text: <%- JSON.stringify(toastError) %>,
+            confirmButtonText: 'Entendido',
+            confirmButtonColor: '#E53559',
+        });
+        <% } %>
+
+        var url = new URL(window.location.href);
+        <% if (typeof toastExito !== 'undefined' && toastExito && typeof toastParam !== 'undefined' && toastParam) { %>
+        url.searchParams.delete('<%- toastParam %>');
+        <% } %>
+        <% if (typeof toastError !== 'undefined' && toastError) { %>
+        url.searchParams.delete('error');
+        <% } %>
+        window.history.replaceState({}, '', url);
+    });
+</script>
+<% } %>

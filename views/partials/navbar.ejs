@@ -5,20 +5,44 @@
 <header>
     <nav class="navbar navbar-expand-lg navbar-dark border-bottom box-shadow fixed-top" style="background-color: var(--color-fondo-oscuro, #121212);">
         <div class="container-fluid">
+            <%#
+              Hueco a la izquierda del mismo ancho que el corazón de la derecha.
+              Sin él, la marca dejaría de estar centrada en cuanto aparece algo
+              a un solo lado. Es decorativo, así que se oculta a los lectores.
+            %>
+            <span class="nav-hueco d-lg-none" aria-hidden="true"></span>
+
             <a class="navbar-brand logo marca-corona" href="/">
                 <i class="bi bi-award-fill corona"></i>
                 <span>Piel de <strong>Campeón</strong></span>
             </a>
 
             <%#
-              En móvil las secciones viven en la barra inferior, así que aquí
-              solo queda la marca, centrada. El carrito y el menú aparecen a
-              partir de lg, donde ya no hay barra inferior.
+              En móvil las secciones viven en la barra inferior; aquí queda la
+              marca centrada y el acceso a favoritos, que no tiene sitio abajo.
+              El carrito y el menú aparecen a partir de lg.
             %>
             <div class="d-flex align-items-center gap-1 order-lg-last">
+                <%#
+                  Favoritos. El contador lo pinta el servidor cuando hay sesión;
+                  para un invitado lo pone favoritos.js leyendo su navegador.
+                %>
+                <a href="/favoritos" class="nav-favoritos position-relative" aria-label="Ver mis favoritos">
+                    <i class="bi bi-heart-fill"></i>
+                    <span id="fav-badge"
+                          class="position-absolute badge rounded-pill"
+                          <%= (typeof favoritos !== 'undefined' && favoritos.length) ? '' : 'hidden' %>>
+                        <%= (typeof favoritos !== 'undefined' && favoritos.length) || 0 %>
+                    </span>
+                </a>
+
                 <a href="/carrito" class="nav-cart position-relative d-none d-lg-inline-flex" aria-label="Ver mi carrito">
                     <i class="bi bi-cart"></i>
-                    <span id="cart-badge" class="position-absolute badge rounded-pill">0</span>
+                    <%# Con su número ya puesto: renderizar un 0 y corregirlo
+                        después hacía parpadear la burbuja en cada recarga. %>
+                    <span id="cart-badge"
+                          class="position-absolute badge rounded-pill"
+                          <%= totalCarrito ? '' : 'hidden' %>><%= totalCarrito %></span>
                 </a>
 
                 <button class="navbar-toggler d-none d-lg-inline-flex" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Abrir navegación">
@@ -43,11 +67,18 @@
                         </li>
 
                         <% if (typeof usuario !== 'undefined' && usuario) { %>
-                            <% if (usuario.esAdmin) { %>
+                            <%# `esAdmin` es la variable que pone auth.js; el
+                                objeto usuario no tiene una propiedad esAdmin
+                                propia, así que este enlace nunca se veía ni
+                                para un administrador real. %>
+                            <% if (esAdmin) { %>
                                 <li class="nav-item">
                                     <a class="nav-link text-light" href="/admin">Panel de Admin</a>
                                 </li>
                             <% } %>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" href="/account">Mi cuenta</a>
+                            </li>
                             <li class="nav-item">
                                 <form class="nav-link text-light" action="/account/logout" method="post">
                                     <button type="submit" class="btn btn-link nav-link text-light p-0" style="border: none;">Cerrar Sesión</button>

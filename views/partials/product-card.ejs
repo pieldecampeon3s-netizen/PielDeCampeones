@@ -42,7 +42,7 @@
 
         <% if (producto.stock <= 0) { %>
             <span class="chip-talla chip-agotado">Sin stock</span>
-        <% } else if ((producto.tallas || []).length) { %>
+        <% } else if ((producto.tallasStock || []).length) { %>
             <%# Abre la hoja de tallas: desde ahí se añade al carrito. %>
             <button type="button"
                     class="chip-talla elegir-talla-btn"
@@ -50,7 +50,7 @@
                     data-nombre="<%= producto.nombre %>"
                     data-precio="<%= formatCOP(producto.precio) %>"
                     data-imagen="<%= producto.imagenUrl %>"
-                    data-tallas="<%= producto.tallas.join(',') %>">
+                    data-tallas-stock='<%- JSON.stringify(producto.tallasStock) %>'>
                 Talla: <strong>elegir</strong>
             </button>
         <% } else { %>

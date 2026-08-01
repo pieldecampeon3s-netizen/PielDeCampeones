@@ -1,4 +1,6 @@
 <div class="container mt-4">
+    <%- include('../partials/admin/aviso-swal') %>
+
     <h1 class="h2 mb-4">Dashboard</h1>
 
     <div class="row g-4 mb-5 justify-content-center">
@@ -10,7 +12,7 @@
                 <div class="kpi-card categorias">
                     <div class="kpi-icon"><i class="bi bi-tags"></i></div>
                     <div>
-                        <div class="kpi-value">5</div>
+                        <div class="kpi-value"><%= dashboard.totalCategorias %></div>
                         <div class="kpi-label">Total de Categorías</div>
                     </div>
                 </div>
@@ -26,19 +28,38 @@
             <a href="/admin/productos" class="quick-action-card">
                 <i class="bi bi-boxes"></i>
                 <h4>Gestionar Productos</h4>
+                <i class="bi bi-chevron-right quick-action-flecha"></i>
             </a>
         </div>
         <div class="col-md-6 col-lg-3 d-flex">
             <a href="/admin/categorias" class="quick-action-card">
                 <i class="bi bi-tags"></i>
                 <h4>Administrar Categorías</h4>
+                <i class="bi bi-chevron-right quick-action-flecha"></i>
             </a>
         </div>
         <div class="col-md-6 col-lg-3 d-flex">
             <a href="/admin/usuarios" class="quick-action-card">
                 <i class="bi bi-people"></i>
                 <h4>Gestionar Usuarios</h4>
+                <i class="bi bi-chevron-right quick-action-flecha"></i>
             </a>
+        </div>
+    </div>
+
+    <div class="row justify-content-center mb-5">
+        <div class="col-lg-8">
+            <div class="tarjeta-config-admin">
+                <h5 class="mb-3"><i class="bi bi-eye-slash me-2"></i>Catálogo</h5>
+                <form action="/admin/configuracion" method="post" class="fila-interruptor-admin">
+                    <label for="ocultarAgotados">Ocultar productos agotados de la tienda</label>
+                    <input type="checkbox"
+                           id="ocultarAgotados"
+                           name="ocultarAgotados"
+                           <%= ocultarAgotados ? 'checked' : '' %>
+                           onchange="this.form.requestSubmit()">
+                </form>
+            </div>
         </div>
     </div>
 </div>
@@ -192,6 +213,73 @@
         .quick-action-card:hover [class*="bi-people"] {
             color: var(--color-primario);
         }
+
+        /* La flechita solo pinta algo en la fila compacta de móvil (ver
+           media query abajo); en escritorio, con la tarjeta grande y
+           centrada, no aporta nada y queda oculta. */
+        .quick-action-flecha {
+            display: none;
+        }
+
+    /*
+      Móvil: la tarjeta alta y centrada (icono grande arriba, texto abajo,
+      mucho aire) se ve vacía y ocupa media pantalla por 3 accesos que en el
+      fondo son solo enlaces a una lista. Se compactan en filas horizontales,
+      como el resto de accesos rápidos del panel (mismo espíritu que
+      cuenta-accesos en la página "Mi cuenta"): icono a color en un círculo,
+      el texto al lado y una flecha al final para que se note que son
+      tocables. El color de cada icono deja de depender del :hover (que en
+      un teléfono casi nunca se dispara) y queda fijo siempre.
+    */
+    @media (max-width: 767.98px) {
+        .quick-action-card {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 1rem 1.1rem;
+            text-align: left;
+            min-height: 48px;
+        }
+
+        .quick-action-card i:not(.quick-action-flecha) {
+            flex: none;
+            width: 46px;
+            height: 46px;
+            margin-bottom: 0;
+            font-size: 1.4rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .05);
+        }
+
+        .quick-action-card [class*="bi-boxes"] { color: var(--color-azul); }
+        .quick-action-card [class*="bi-tags"] { color: var(--color-verde); }
+        .quick-action-card [class*="bi-people"] { color: var(--color-primario); }
+
+        .quick-action-card h4 {
+            flex: 1;
+            margin: 0;
+            font-size: 1rem;
+        }
+
+        .quick-action-flecha {
+            display: block;
+            flex: none;
+            font-size: 1rem;
+            color: var(--color-texto-secundario);
+        }
+
+        /* El brillo giratorio del borde no tiene sentido sin :hover real. */
+        .quick-action-card::before {
+            display: none;
+        }
+
+        .quick-action-card:hover {
+            transform: none;
+        }
+    }
 
     /* ESTILO PARA EL CONTENEDOR DEL GRÁFICO */
     .chart-container {

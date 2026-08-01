@@ -1,44 +1,155 @@
-<div class="container-fluid mt-4">
+<%#
+  Gestión de usuarios.
+
+  Los datos vienen de la tabla `usuarios` (ver src/datos-supabase.js). Cada
+  usuario tiene un solo rol ('Cliente' o 'Administrador').
+
+  "Editar" abre un único modal compartido (ver el final del archivo), que
+  public/js/admin.js rellena con los datos de la fila que se tocó. Antes
+  había dos botones sueltos ("Cambiar rol" / "Desactivar") con un confirm()
+  del navegador cada uno; ahora todo se edita junto — nombre, teléfono, rol,
+  estado y, si hace falta, una contraseña nueva — y se guarda por AJAX para
+  poder mostrar un error sin cerrar el modal ni recargar la página.
+
+  Espera: usuarios, usuario (el admin con sesión, ya en res.locals)
+%>
+<div class="container-fluid mt-4 pagina-admin">
+    <%- include('../partials/admin/aviso-swal') %>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h2"><%= title %></h1>
         <a href="/admin" class="btn btn-outline-secondary">Volver al Dashboard</a>
     </div>
 
     <div class="card order-details-card p-4">
-        <div class="table-responsive">
-            <table class="table table-dark-custom table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th>ID de Usuario</th>
-                        <th>Usuario</th>
-                        <th>Email</th>
-                        <th>Roles</th>
-                        <th class="text-end">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <% (usuarios || []).forEach(function (user) { %>
+        <% if (!usuarios || !usuarios.length) { %>
+            <p class="text-white-50 mb-0">Todavía no hay usuarios registrados.</p>
+        <% } else { %>
+            <div class="table-responsive">
+                <table class="table table-dark-custom table-hover mb-0">
+                    <thead>
                         <tr>
-                            <td><small><%= user.id %></small></td>
-                            <td><strong><%= user.userName %></strong></td>
-                            <td><%= user.email %></td>
-                            <td>
-                                <% if (user.roles.length > 0) { %>
-                                    <% (user.roles || []).forEach(function (role) { %>
-                                        <span class="badge me-1 <%= role == 'Administrador' ? 'bg-danger' : 'bg-primary' %>"><%= role %></span>
-                                    <% }); %>
-                                <% } else { %>
-                                    <span class="badge bg-secondary">Sin rol</span>
-                                <% } %>
-                            </td>
-                            <td class="text-end">
-                                <a href="#" class="btn btn-sm btn-outline-warning disabled">Editar Roles</a>
-                                <a href="#" class="btn btn-sm btn-outline-danger ms-2 disabled">Eliminar</a>
-                            </td>
+                            <th>Nombre</th>
+                            <th>Correo</th>
+                            <th>Rol</th>
+                            <th>Estado</th>
+                            <th>Último acceso</th>
+                            <th class="text-end">Acciones</th>
                         </tr>
-                    <% }); %>
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                        <% usuarios.forEach(function (u) { %>
+                            <tr>
+                                <td data-label="Nombre"><strong><%= u.nombre || '(sin nombre)' %></strong></td>
+                                <td data-label="Correo"><%= u.email %></td>
+                                <td data-label="Rol">
+                                    <span class="badge <%= u.rol === 'Administrador' ? 'bg-warning text-dark' : 'bg-secondary' %>">
+                                        <%= u.rol %>
+                                    </span>
+                                </td>
+                                <td data-label="Estado">
+                                    <% if (u.activo) { %>
+                                        <span class="badge bg-success">Activo</span>
+                                    <% } else { %>
+                                        <span class="badge bg-danger">Desactivado</span>
+                                    <% } %>
+                                </td>
+                                <td data-label="Último acceso">
+                                    <small class="text-white-50">
+                                        <%= u.ultimoAcceso
+                                              ? new Date(u.ultimoAcceso).toLocaleString('es-CO')
+                                              : 'nunca' %>
+                                    </small>
+                                </td>
+                                <td class="text-end celda-acciones-tarjeta">
+                                    <% if (usuario && u.id === usuario.id) { %>
+                                        <span class="campo-nota">Tu cuenta</span>
+                                    <% } else { %>
+                                        <button type="button"
+                                                class="btn btn-sm btn-outline-light"
+                                                data-bs-toggle="modal"
+                                                data-bs-target="#modalEditarUsuario"
+                                                data-id="<%= u.id %>"
+                                                data-email="<%= u.email %>"
+                                                data-nombre="<%= u.nombre %>"
+                                                data-telefono="<%= u.telefono %>"
+                                                data-rol="<%= u.rol %>"
+                                                data-activo="<%= u.activo ? '1' : '0' %>">
+                                            <i class="bi bi-pencil-fill me-1"></i>Editar
+                                        </button>
+                                    <% } %>
+                                </td>
+                            </tr>
+                        <% }); %>
+                    </tbody>
+                </table>
+            </div>
+        <% } %>
+    </div>
+</div>
+
+<%# Modal único, compartido por todas las filas: admin.js lo rellena al abrirlo. %>
+<div class="modal fade" id="modalEditarUsuario" tabindex="-1" aria-labelledby="modalEditarUsuarioTitulo" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content modal-admin">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarUsuarioTitulo">Editar usuario</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form id="formEditarUsuario" class="form-admin">
+                <div class="modal-body">
+                    <div>
+                        <label>Correo</label>
+                        <input type="email" class="form-control" id="editarUsuarioEmail" disabled>
+                        <p class="campo-nota">El correo no se puede cambiar desde aquí.</p>
+                    </div>
+
+                    <div>
+                        <label for="editarUsuarioNombre">Nombre</label>
+                        <input type="text" class="form-control" id="editarUsuarioNombre" name="nombre">
+                    </div>
+
+                    <div>
+                        <label for="editarUsuarioTelefono">Teléfono</label>
+                        <input type="tel" class="form-control" id="editarUsuarioTelefono" name="telefono">
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label for="editarUsuarioRol">Rol</label>
+                            <select class="form-select" id="editarUsuarioRol" name="rol">
+                                <option value="Cliente">Cliente</option>
+                                <option value="Administrador">Administrador</option>
+                            </select>
+                        </div>
+                        <div class="col-sm-6">
+                            <label for="editarUsuarioActivo">Estado</label>
+                            <select class="form-select" id="editarUsuarioActivo" name="activo">
+                                <option value="1">Activo</option>
+                                <option value="0">Desactivado</option>
+                            </select>
+                        </div>
+                    </div>
+                    <span class="text-danger" id="errorEditarUsuarioGeneral"></span>
+
+                    <hr>
+
+                    <p class="campo-nota">Deja la contraseña en blanco si no quieres cambiarla.</p>
+                    <div>
+                        <label for="editarUsuarioClave">Nueva contraseña</label>
+                        <input type="password" class="form-control" id="editarUsuarioClave" name="clave" autocomplete="new-password">
+                    </div>
+                    <div>
+                        <label for="editarUsuarioClaveConfirmar">Confirmar nueva contraseña</label>
+                        <input type="password" class="form-control" id="editarUsuarioClaveConfirmar" name="claveConfirmar" autocomplete="new-password">
+                        <span class="text-danger" id="errorEditarUsuarioClave"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn-admin" id="botonGuardarUsuario">Guardar cambios</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

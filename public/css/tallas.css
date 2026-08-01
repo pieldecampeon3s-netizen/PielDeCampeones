@@ -73,6 +73,19 @@
     box-shadow: 0 0 0 3px rgba(217, 176, 74, .4);
 }
 
+/* Talla sin stock: se ve, para que quede claro que existe, pero no se puede
+   elegir. */
+.talla-radio:disabled + .talla-opcion,
+.talla-opcion.talla-agotada {
+    opacity: .4;
+    text-decoration: line-through;
+    cursor: not-allowed;
+}
+
+.talla-radio:disabled + .talla-opcion:hover {
+    border-color: rgba(128, 128, 128, .45);
+}
+
 .talla-aviso {
     margin: .6rem 0 0;
     font-size: .85rem;
@@ -117,4 +130,150 @@
 
 .hoja-tallas .talla-aviso {
     color: #ff7b7b;
+}
+
+/* ==========================================================================
+   Cantidad y botón de compra (ficha de producto)
+   ========================================================================== */
+.compra-fila {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.selector-cantidad {
+    text-align: center;
+}
+
+.selector-cantidad > label {
+    display: block;
+    margin-bottom: .5rem;
+    font-size: .88rem;
+    font-weight: 600;
+}
+
+/* --- Control con − y + --- */
+.cantidad-control {
+    display: inline-flex;
+    align-items: stretch;
+    border: 1.5px solid rgba(128, 128, 128, .45);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.cantidad-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* 48px de lado: cómodo de tocar sin apuntar. */
+    width: 48px;
+    min-height: 48px;
+    flex: none;
+    border: none;
+    background: rgba(128, 128, 128, .12);
+    color: inherit;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background .2s ease;
+}
+
+.cantidad-btn:hover:not(:disabled) {
+    background: var(--color-primario, #d9b04a);
+    color: #1a1400;
+}
+
+/* Deshabilitado en los extremos: se ve que no hay a dónde seguir. */
+.cantidad-btn:disabled {
+    opacity: .35;
+    cursor: not-allowed;
+}
+
+.cantidad-valor {
+    width: 64px;
+    min-height: 48px;
+    border: none;
+    border-inline: 1.5px solid rgba(128, 128, 128, .45);
+    background: transparent;
+    color: inherit;
+    text-align: center;
+    /* 16px evita que iOS haga zoom al enfocar el campo. */
+    font-size: 16px;
+    font-weight: 700;
+}
+
+.cantidad-valor:focus {
+    outline: none;
+    background: rgba(217, 176, 74, .1);
+}
+
+/* Fuera las flechas nativas: ya hay botones propios. */
+.cantidad-valor::-webkit-outer-spin-button,
+.cantidad-valor::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.cantidad-valor[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+.aviso-stock {
+    margin: .5rem 0 0;
+    min-height: 1.2em; /* hueco reservado: al aparecer no empuja el botón */
+    font-size: .82rem;
+    color: var(--color-primario, #d9b04a);
+}
+
+.btn-agregar {
+    min-height: 48px;
+    padding-inline: 1.75rem;
+}
+
+@media (max-width: 575.98px) {
+    /* En móvil el botón va debajo y a todo el ancho: es la acción principal. */
+    .compra-fila {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .btn-agregar {
+        width: 100%;
+        max-width: 320px;
+    }
+}
+
+/* Al tocar el tope el aviso pasa de informativo a advertencia. */
+.aviso-stock.tope-alcanzado {
+    color: #ff9d3d;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Centrado del bloque de compra (ficha de producto)
+
+   La cantidad y el botón ya iban centrados, pero las tallas seguían pegadas a
+   la izquierda: el recuadro se veía descuadrado. Se centra todo el conjunto.
+
+   Se limita al selector que vive dentro del formulario de compra: en la hoja
+   de tallas del catálogo el reparto actual funciona bien.
+   ========================================================================== */
+.purchase-form .selector-tallas {
+    text-align: center;
+}
+
+.purchase-form .tallas-cabecera {
+    /* Etiqueta y enlace centrados como un grupo, en vez de uno a cada extremo. */
+    justify-content: center;
+    gap: .75rem;
+}
+
+.purchase-form .tallas-opciones {
+    justify-content: center;
+}
+
+.purchase-form .talla-aviso {
+    text-align: center;
 }

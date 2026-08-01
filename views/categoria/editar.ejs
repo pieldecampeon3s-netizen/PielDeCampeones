@@ -1,25 +1,30 @@
-<h1 class="h2"><%= title %></h1>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form method="post" action="/admin/categorias/editar">
-            <input type="hidden" />
-            <div class="text-danger"></div>
-            <div class="mb-3">
-                <label for="nombre" class="form-label"></label>
-                <input name="nombre" id="nombre" class="form-control" />
-                <span class="text-danger"><%= (errores && errores.nombre) || '' %></span>
+<div class="container-fluid mt-4 pagina-admin">
+    <h1 class="h2"><%= title %>: <%= categoria.nombre %></h1>
+    <p class="text-muted">Modifica los detalles de la categoría seleccionada.</p>
+    <hr />
+
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card order-details-card p-4">
+                <form method="post" action="/admin/categorias/editar/<%= categoria.id %>" class="form-admin">
+                    <div>
+                        <label for="nombre">Nombre de la categoría</label>
+                        <input name="nombre" id="nombre" class="form-control" value="<%= categoria.nombre || '' %>" required />
+                        <span class="text-danger"><%= (errores && errores.nombre) || '' %></span>
+                    </div>
+
+                    <div>
+                        <label for="descripcion">Descripción</label>
+                        <textarea name="descripcion" id="descripcion" class="form-control" rows="3"><%= categoria.descripcion || '' %></textarea>
+                        <span class="text-danger"><%= (errores && errores.descripcion) || '' %></span>
+                    </div>
+
+                    <div class="mt-2 d-flex gap-2 flex-wrap">
+                        <button type="submit" class="btn-admin">Guardar cambios</button>
+                        <a href="/admin/categorias" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
             </div>
-            <div class="mb-3">
-                <label for="descripcion" class="form-label"></label>
-                <textarea name="descripcion" id="descripcion" class="form-control" rows="3"></textarea>
-                <span class="text-danger"><%= (errores && errores.descripcion) || '' %></span>
-            </div>
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                <a href="/admin/categorias" class="btn btn-secondary">Cancelar</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
-

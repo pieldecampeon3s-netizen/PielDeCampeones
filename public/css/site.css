@@ -1,15 +1,15 @@
 /*  MODO OSCURO PROFESIONAL PARA DELUXE CARS */
 
-/* --- 1. Definición de Variables Globales y Colores Base --- */
+/* --- 1. Definiciï¿½n de Variables Globales y Colores Base --- */
 :root {
     --color-primario: #d9b04a; /* Dorado de la marca */
     --color-fondo-oscuro: #121212; /* Un negro elegante, no puro */
     --color-superficie-oscura: #1e1e1e; /* Para tarjetas y elementos elevados */
     --color-borde-oscuro: #333333;
-    --color-texto-principal: #f5f5f7; /* Blanco ligeramente grisáceo */
+    --color-texto-principal: #f5f5f7; /* Blanco ligeramente grisï¿½ceo */
     --color-texto-secundario: #a8a8a8; /* Gris para texto menos importante */
-    --color-texto-oscuro-fuerte: #212529; /* Para títulos en tarjetas claras */
-    --color-texto-oscuro-suave: #6c757d; /* Para párrafos en tarjetas claras */
+    --color-texto-oscuro-fuerte: #212529; /* Para tï¿½tulos en tarjetas claras */
+    --color-texto-oscuro-suave: #6c757d; /* Para pï¿½rrafos en tarjetas claras */
 }
 
 /* --- 2. Estilos Globales para el Body --- */
@@ -19,7 +19,7 @@ body {
     font-family: 'Poppins', sans-serif;
 }
 
-/* --- 3. Tipografía y Encabezados --- */
+/* --- 3. Tipografï¿½a y Encabezados --- */
 h1, h2, h3, h4, h5, h6 {
     color: var(--color-texto-principal);
     font-weight: 700;
@@ -36,9 +36,25 @@ a {
     }
 /*  NUEVOS ESTILOS Y CORRECCIONES PARA TABLAS DEL ADMIN*/
 
+/*
+  Bootstrap 5.3 pinta cada celda con `color: var(--bs-table-color)` y
+  `background-color: var(--bs-table-bg)` mediante un selector MÃS especÃ­fico
+  que ".table-dark-custom" (algo como ".table > :not(caption) > * > *"). Fijar
+  solo `color`/`background-color` aquÃ­ no alcanza a ganarle a eso: el
+  resultado real era texto negro sobre fondo blanco en cada celda, aunque la
+  tabla "por fuera" se viera oscura. La forma correcta es sobreescribir las
+  variables que Bootstrap realmente lee.
+*/
 .table-dark-custom {
+    --bs-table-bg: var(--color-superficie-oscura);
+    --bs-table-color: var(--color-texto-secundario);
+    --bs-table-border-color: var(--color-borde-oscuro);
+    --bs-table-striped-bg: rgba(255, 255, 255, .025);
+    --bs-table-striped-color: var(--color-texto-secundario);
+    --bs-table-hover-bg: rgba(255, 255, 255, .05);
+    --bs-table-hover-color: var(--color-texto-principal);
     background-color: var(--color-superficie-oscura);
-    color: var(--color-texto-secundario); /* Color de texto por defecto para la tabla */
+    color: var(--color-texto-secundario);
 }
 
     .table-dark-custom thead th {
@@ -63,8 +79,96 @@ a {
     color: var(--color-texto-secundario); /* Corrige el color de los enlaces dentro de la tabla si es necesario */
 }
 
+/*
+  MÃ³vil: una tabla angosta con muchas columnas obliga a desplazar el dedo de
+  lado, y encima recorta justo las columnas de acciones. En vez de eso, cada
+  fila se convierte en una tarjeta: la cabecera desaparece y cada celda pasa
+  a ser una lÃ­nea "etiqueta: valor" (la etiqueta sale de `data-label` en el
+  propio <td>). La miniatura y las acciones no llevan etiqueta: se marcan con
+  sus propias clases para que se vean como cabecera y pie de la tarjeta.
+*/
+@media (max-width: 767.98px) {
+    .table-dark-custom thead {
+        display: none;
+    }
 
-/* --- 4. Estilos para Componentes de Bootstrap Genéricos --- */
+    .table-dark-custom,
+    .table-dark-custom tbody,
+    .table-dark-custom tr,
+    .table-dark-custom td {
+        display: block;
+        width: 100%;
+    }
+
+    .table-dark-custom tbody tr {
+        margin-bottom: .9rem;
+        padding: .9rem 1rem;
+        border: 1px solid var(--color-borde-oscuro);
+        border-radius: 14px;
+        background: var(--color-superficie-oscura);
+    }
+
+    .table-dark-custom tbody tr:last-child {
+        margin-bottom: 0;
+    }
+
+    .table-dark-custom td {
+        padding: .5rem 0;
+        border: none;
+    }
+
+    .table-dark-custom td + td {
+        border-top: 1px solid var(--color-borde-oscuro);
+    }
+
+    .table-dark-custom td[data-label] {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: .75rem;
+        text-align: right;
+    }
+
+    .table-dark-custom td[data-label]::before {
+        content: attr(data-label);
+        flex: none;
+        font-size: .72rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+        color: var(--color-texto-secundario);
+        text-align: left;
+    }
+
+    /* Cabecera de la tarjeta: miniatura + nombre, sin etiqueta ni borde. */
+    .celda-cabecera-tarjeta {
+        display: flex !important;
+        align-items: center;
+        gap: .8rem;
+        padding-bottom: .7rem !important;
+        text-align: left !important;
+    }
+
+    /* Pie de la tarjeta: los botones de acciÃ³n, a lo ancho. */
+    .celda-acciones-tarjeta {
+        padding-top: .7rem !important;
+        display: flex !important;
+        flex-wrap: wrap;
+        gap: .5rem;
+    }
+
+    .celda-acciones-tarjeta > a,
+    .celda-acciones-tarjeta > form {
+        flex: 1 1 auto;
+    }
+
+    .celda-acciones-tarjeta .btn {
+        width: 100%;
+    }
+}
+
+
+/* --- 4. Estilos para Componentes de Bootstrap Genï¿½ricos --- */
 .card {
     background-color: var(--color-superficie-oscura);
     border: 1px solid var(--color-borde-oscuro);
@@ -105,7 +209,7 @@ a {
     color: var(--color-texto-secundario) !important;
 }
 
-/* --- 5. Estilos Específicos para Secciones y Tarjetas --- */
+/* --- 5. Estilos Especï¿½ficos para Secciones y Tarjetas --- */
 
 .bg-light {
     background-color: var(--color-fondo-oscuro) !important;
@@ -128,7 +232,7 @@ a {
     .testimonial-card-v2:hover {
         border-color: var(--color-primario);
     }
-    /* Títulos dentro de las tarjetas claras */
+    /* Tï¿½tulos dentro de las tarjetas claras */
     .promise-card h4,
     .testimonial-card-v2 .testimonial-author {
         color: var(--color-texto-oscuro-fuerte) !important;
@@ -137,7 +241,7 @@ a {
     .testimonial-card-v2 .testimonial-author {
         color: var(--color-primario) !important; /* El autor mantiene el color de la marca */
     }
-    /* Párrafos dentro de las tarjetas claras */
+    /* Pï¿½rrafos dentro de las tarjetas claras */
     .promise-card p,
     .testimonial-card-v2 .testimonial-text,
     .testimonial-card-v2 .testimonial-location {
@@ -152,7 +256,7 @@ a {
     padding: 2.5rem;
     border-radius: 0.5rem;
 }
-    /* Títulos y etiquetas dentro de la caja blanca del formulario */
+    /* Tï¿½tulos y etiquetas dentro de la caja blanca del formulario */
     .contact-form-box h4,
     .contact-form-box label {
         color: var(--color-texto-oscuro-fuerte) !important;
@@ -193,7 +297,7 @@ a {
     }
 /* ... (ESTILOS ANTERIORES) ... */
 
-/* --- Contenedor principal de la página de Login --- */
+/* --- Contenedor principal de la pï¿½gina de Login --- */
 .login-container {
     display: flex;
     align-items: center;
@@ -201,7 +305,7 @@ a {
     min-height: 100vh;
     /* La imagen original (hero-main-bg.jpg) no existe. Se reutiliza la
        foto de la tienda: el JPG para navegadores antiguos y, debajo,
-       la versión WebP que pesa la cuarta parte. */
+       la versiï¿½n WebP que pesa la cuarta parte. */
     background-image: linear-gradient(rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.9)), url('/images/futbol.jpg');
     background-image: linear-gradient(rgba(18, 18, 18, 0.8), rgba(18, 18, 18, 0.9)),
                       image-set(url('/images/futbol-1280.webp') type('image/webp'),
@@ -250,7 +354,7 @@ a {
         color: var(--color-texto-secundario);
     }
 
-    /* --- Botón de Ingresar --- */
+    /* --- Botï¿½n de Ingresar --- */
     .login-card .btn-primary {
         background-color: var(--color-primario);
         border: none;
@@ -259,7 +363,7 @@ a {
         border-radius: 0.5rem;
     }
 
-    /* --- Enlaces de "Olvidé mi contraseña" y "Registrarse" --- */
+    /* --- Enlaces de "Olvidï¿½ mi contraseï¿½a" y "Registrarse" --- */
     .login-card .small-links a {
         color: var(--color-texto-secundario);
         text-decoration: none;

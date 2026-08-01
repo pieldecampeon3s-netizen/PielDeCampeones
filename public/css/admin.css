@@ -1,0 +1,341 @@
+/*
+  Panel de administración. Usa la misma paleta oscura/roja que ya trae
+  admin/index.ejs en su <style> inline (--color-primario: #E53559 y compañía):
+  es la identidad visual que el panel ya tiene, deliberadamente distinta del
+  dorado de la tienda. Aquí se repiten las mismas variables para que las
+  páginas de crear/editar producto, que no cargan ese <style>, luzcan iguales.
+*/
+:root {
+    --color-fondo: #121212;
+    --color-superficie-oscura: #1E1E1E;
+    --color-borde-oscuro: #2F2F2F;
+    --color-primario: #E53559;
+    --color-texto-principal: #EAEAEA;
+    --color-texto-secundario: #A0A0A0;
+    --color-verde: #30d158;
+}
+
+/* ==========================================================================
+   Formulario de producto (crear / editar)
+   ========================================================================== */
+.form-admin {
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+}
+
+.form-admin label {
+    display: block;
+    margin-bottom: .4rem;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--color-texto-principal);
+}
+
+.form-admin .form-control,
+.form-admin .form-select {
+    min-height: 48px;
+    background: #101010;
+    border: 1px solid var(--color-borde-oscuro);
+    color: var(--color-texto-principal);
+    /* 16px evita que iOS haga zoom al enfocar el campo. */
+    font-size: 16px;
+}
+
+.form-admin .form-control:focus,
+.form-admin .form-select:focus {
+    background: #101010;
+    color: var(--color-texto-principal);
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px rgba(229, 53, 89, .2);
+}
+
+.form-admin textarea.form-control {
+    min-height: 96px;
+}
+
+/*
+  El input de archivo trae su propio botón nativo del sistema operativo
+  ("Seleccionar archivo"), que ningún navegador pinta con el fondo oscuro del
+  campo: sale gris claro/blanco sin importar el tema de la página. Hay que
+  restylearlo aparte con ::file-selector-button (y su alias -webkit- para
+  navegadores más viejos) para que combine con el resto del formulario.
+*/
+.form-admin input[type="file"].form-control {
+    display: flex;
+    align-items: center;
+    padding: .5rem .8rem;
+}
+
+.form-admin input[type="file"].form-control::file-selector-button,
+.form-admin input[type="file"].form-control::-webkit-file-upload-button {
+    margin-right: .9rem;
+    padding: .5rem 1rem;
+    border: none;
+    border-radius: 8px;
+    background: var(--color-primario);
+    color: #fff;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: filter .15s ease;
+}
+
+.form-admin input[type="file"].form-control:hover::file-selector-button,
+.form-admin input[type="file"].form-control:hover::-webkit-file-upload-button {
+    filter: brightness(1.1);
+}
+
+.form-admin .text-danger {
+    display: block;
+    margin-top: .35rem;
+    font-size: .82rem;
+}
+
+.form-admin .campo-nota {
+    margin: .35rem 0 0;
+    font-size: .78rem;
+    color: var(--color-texto-secundario);
+}
+
+.btn-admin {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: .7rem 1.4rem;
+    border: none;
+    border-radius: 10px;
+    background: var(--color-primario);
+    color: #fff;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter .2s ease;
+}
+
+.btn-admin:hover {
+    filter: brightness(1.1);
+    color: #fff;
+}
+
+/* ==========================================================================
+   Tallas: una fila "etiqueta + cantidad" por talla. Un chip de solo
+   seleccionar no sirve aquí porque cada talla necesita su propio número, no
+   un simple sí/no — una fila con su propio campo se toca mejor con el pulgar
+   que 5 casillas apretadas con un input escondido dentro.
+   ========================================================================== */
+.tallas-admin {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+    gap: .6rem;
+    padding: 0;
+    margin: 0;
+    border: none;
+}
+
+.tallas-admin legend {
+    grid-column: 1 / -1;
+    margin-bottom: .2rem;
+    padding: 0;
+    font-size: .9rem;
+    font-weight: 600;
+    color: var(--color-texto-principal);
+}
+
+.talla-admin-opcion {
+    display: flex;
+    flex-direction: column;
+    gap: .3rem;
+    /*
+      Sin esto, un elemento de grid nunca se encoge por debajo del ancho
+      intrínseco de su contenido (el valor por defecto es min-width: auto).
+      El input de número de abajo tiene un ancho propio del navegador de unos
+      220px; sin min-width: 0 aquí, cada columna de la cuadrícula insistía en
+      ser así de ancha y todo se salía de la pantalla en móvil — la talla "L"
+      terminaba empujada fuera del área visible.
+    */
+    min-width: 0;
+}
+
+.talla-admin-etiqueta {
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--color-texto-secundario);
+}
+
+.talla-admin-stock {
+    width: 100%;
+    min-height: 44px;
+    padding: .4rem .6rem;
+    border: 1px solid var(--color-borde-oscuro);
+    border-radius: 10px;
+    background: #101010;
+    color: var(--color-texto-principal);
+    text-align: center;
+    font-size: 16px;
+    box-sizing: border-box;
+}
+
+.talla-admin-stock:focus {
+    outline: none;
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px rgba(229, 53, 89, .2);
+}
+
+/* ==========================================================================
+   Foto del producto
+   ========================================================================== */
+.foto-admin-actual {
+    display: flex;
+    align-items: center;
+    gap: .9rem;
+    margin-bottom: .7rem;
+}
+
+.foto-admin-actual img,
+#previaFotoAdmin {
+    width: 72px;
+    height: 72px;
+    object-fit: cover;
+    border-radius: 10px;
+    border: 1px solid var(--color-borde-oscuro);
+}
+
+#previaFotoAdmin {
+    display: none;
+}
+
+/* ==========================================================================
+   Insignia de producto oculto (lista del panel)
+   ========================================================================== */
+.badge-oculto {
+    margin-left: .5rem;
+    background: rgba(160, 160, 160, .25);
+    color: var(--color-texto-secundario);
+    font-weight: 600;
+}
+
+tr.fila-oculta {
+    opacity: .55;
+}
+
+/* ==========================================================================
+   Interruptor de configuración (dashboard)
+   ========================================================================== */
+.tarjeta-config-admin {
+    background: var(--color-superficie-oscura);
+    border: 1px solid var(--color-borde-oscuro);
+    border-radius: 1rem;
+    padding: 1.4rem;
+    color: var(--color-texto-principal);
+}
+
+.fila-interruptor-admin {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.fila-interruptor-admin label {
+    margin: 0;
+    font-size: .95rem;
+}
+
+.fila-interruptor-admin input[type="checkbox"] {
+    width: 2.6rem;
+    height: 1.5rem;
+    flex: none;
+    accent-color: var(--color-primario);
+}
+
+.aviso-config-admin {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0 0 1.25rem;
+    padding: .75rem 1rem;
+    border-radius: 10px;
+    font-size: .88rem;
+    background: rgba(48, 209, 88, .12);
+    border: 1px solid rgba(48, 209, 88, .35);
+    color: #6adf8f;
+}
+
+/* ==========================================================================
+   Móvil: todo a una columna con buen espacio táctil
+   ========================================================================== */
+@media (max-width: 575.98px) {
+    .tallas-admin {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .btn-admin {
+        width: 100%;
+    }
+
+    /* Menos botón, más hueco para el nombre del archivo (o "Ningún archivo
+       seleccionado"): en una pantalla angosta el navegador ya lo recorta con
+       puntos suspensivos, pero cuanto más chico el botón, menos se recorta. */
+    .form-admin input[type="file"].form-control::file-selector-button,
+    .form-admin input[type="file"].form-control::-webkit-file-upload-button {
+        margin-right: .6rem;
+        padding: .45rem .7rem;
+        font-size: 13px;
+    }
+}
+
+/* ==========================================================================
+   Modal "Editar usuario" (y cualquier otro modal del panel): Bootstrap lo
+   pinta claro por defecto, así que hay que oscurecerlo a mano para que
+   combine con el resto.
+   ========================================================================== */
+.modal-admin {
+    background: var(--color-superficie-oscura);
+    color: var(--color-texto-principal);
+    border: 1px solid var(--color-borde-oscuro);
+}
+
+.modal-admin .modal-header,
+.modal-admin .modal-footer {
+    border-color: var(--color-borde-oscuro);
+}
+
+.modal-admin .modal-title {
+    color: var(--color-texto-principal);
+}
+
+.modal-admin .form-admin {
+    gap: 0; /* el mb-3 de cada campo ya separa; con gap del flex quedaba doble aire */
+}
+
+.modal-admin .form-admin > div,
+.modal-admin .form-admin > .row {
+    margin-bottom: 1.1rem;
+}
+
+.modal-admin hr {
+    border-color: var(--color-borde-oscuro);
+    opacity: 1;
+}
+
+/*
+  Móvil: el modal centrado de Bootstrap dejaba franjas de página visible a
+  los lados y arriba/abajo en una pantalla angosta; a pantalla casi completa
+  se toca mejor y no se siente como una ventana flotando de más.
+*/
+@media (max-width: 575.98px) {
+    #modalEditarUsuario .modal-dialog {
+        margin: .5rem;
+        max-width: calc(100% - 1rem);
+    }
+
+    #modalEditarUsuario .modal-content {
+        max-height: calc(100vh - 1rem);
+    }
+
+    #modalEditarUsuario .modal-body {
+        max-height: calc(100vh - 13rem);
+        overflow-y: auto;
+    }
+}

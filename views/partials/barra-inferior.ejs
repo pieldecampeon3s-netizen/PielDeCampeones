@@ -14,26 +14,51 @@
         <span class="barra-etiqueta">Inicio</span>
     </a>
 
-    <a href="/sobre-nosotros" class="barra-item <%= currentPath === '/sobre-nosotros' ? 'activo' : '' %>">
-        <i class="bi bi-shield<%= currentPath === '/sobre-nosotros' ? '-fill' : '' %>"></i>
-        <span class="barra-etiqueta">Sobre nosotros</span>
-    </a>
+    <%# Con sesión de administrador, estos dos espacios se ceden a los
+        accesos de admin que más se usan día a día: el panel y los productos. %>
+    <% if (esAdmin) { %>
+        <a href="/admin" class="barra-item <%= currentPath === '/admin' ? 'activo' : '' %>">
+            <i class="bi bi-speedometer2<%= currentPath === '/admin' ? '-fill' : '' %>"></i>
+            <span class="barra-etiqueta">Panel</span>
+        </a>
+    <% } else { %>
+        <a href="/sobre-nosotros" class="barra-item <%= currentPath === '/sobre-nosotros' ? 'activo' : '' %>">
+            <i class="bi bi-shield<%= currentPath === '/sobre-nosotros' ? '-fill' : '' %>"></i>
+            <span class="barra-etiqueta">Sobre nosotros</span>
+        </a>
+    <% } %>
 
     <%# El carrito, elevado y en el centro: es la acción que más importa. %>
     <a href="/carrito" class="barra-carrito" aria-label="Ver mi carrito">
         <span class="barra-carrito-circulo">
             <i class="bi bi-cart-fill"></i>
-            <span class="barra-carrito-cuenta" id="cart-badge-movil">0</span>
+            <%# Igual que la de la barra superior: sale con su número puesto. %>
+            <span class="barra-carrito-cuenta"
+                  id="cart-badge-movil"
+                  <%= totalCarrito ? '' : 'hidden' %>><%= totalCarrito %></span>
         </span>
         <span class="barra-etiqueta">Carrito</span>
     </a>
 
-    <a href="/contactanos" class="barra-item <%= currentPath === '/contactanos' ? 'activo' : '' %>">
-        <i class="bi bi-whatsapp"></i>
-        <span class="barra-etiqueta">Contactos</span>
-    </a>
+    <% if (esAdmin) { %>
+        <a href="/admin/productos" class="barra-item <%= currentPath.startsWith('/admin/productos') ? 'activo' : '' %>">
+            <i class="bi bi-boxes"></i>
+            <span class="barra-etiqueta">Productos</span>
+        </a>
+    <% } else { %>
+        <a href="/contactanos" class="barra-item <%= currentPath === '/contactanos' ? 'activo' : '' %>">
+            <i class="bi bi-whatsapp"></i>
+            <span class="barra-etiqueta">Contactos</span>
+        </a>
+    <% } %>
 
-    <a href="/account/login" class="barra-item <%= currentPath.startsWith('/account') ? 'activo' : '' %>">
+    <%#
+      Con sesión va al perfil; sin ella, al login. Antes apuntaba siempre a
+      /account/login, así que un usuario ya identificado lo mandaba de vuelta
+      al login, que a su vez lo rebotaba al inicio: "Mi cuenta" parecía roto.
+    %>
+    <a href="<%= usuario ? '/account' : '/account/login' %>"
+       class="barra-item <%= currentPath.startsWith('/account') ? 'activo' : '' %>">
         <i class="bi bi-person<%= currentPath.startsWith('/account') ? '-fill' : '' %>"></i>
         <span class="barra-etiqueta">Mi cuenta</span>
     </a>

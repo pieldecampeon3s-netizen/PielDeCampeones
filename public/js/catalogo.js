@@ -294,12 +294,12 @@
             document.getElementById('hojaNombre').textContent = boton.dataset.nombre;
             document.getElementById('hojaPrecio').textContent = boton.dataset.precio;
 
-            opciones.innerHTML = boton.dataset.tallas
-                .split(',')
+            const tallasStock = JSON.parse(boton.dataset.tallasStock || '[]');
+            opciones.innerHTML = tallasStock
                 .map(
                     (t) =>
-                        `<input type="radio" class="talla-radio" name="tallaHoja" id="hoja-${t}" value="${t}">` +
-                        `<label class="talla-opcion" for="hoja-${t}">${t}</label>`
+                        `<input type="radio" class="talla-radio" name="tallaHoja" id="hoja-${t.talla}" value="${t.talla}" ${t.stock <= 0 ? 'disabled' : ''}>` +
+                        `<label class="talla-opcion${t.stock <= 0 ? ' talla-agotada' : ''}" for="hoja-${t.talla}">${t.talla}</label>`
                 )
                 .join('');
 

@@ -1,0 +1,517 @@
+/*
+  "Mi cuenta". Usa las variables globales de site.css (--color-primario,
+  --color-fondo-oscuro, --color-superficie-oscura...) para quedar coherente
+  con el resto de la tienda, ya que esta página vive dentro del layout normal
+  (con navbar, footer y barra inferior), a diferencia de login o checkout.
+*/
+
+.pagina-cuenta {
+    color: var(--color-texto-secundario);
+}
+
+/* ==========================================================================
+   Cabecera
+   ========================================================================== */
+.cuenta-cabecera {
+    display: flex;
+    align-items: center;
+    gap: 1.1rem;
+    margin-bottom: 1.5rem;
+}
+
+.cuenta-avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    flex: none;
+    border-radius: 50%;
+    background: rgba(217, 176, 74, .14);
+    border: 2px solid var(--color-primario);
+    color: var(--color-primario);
+    font-size: 1.6rem;
+    font-weight: 700;
+}
+
+.cuenta-cabecera h1 {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: .6rem;
+    margin: 0;
+    font-size: clamp(1.4rem, 5vw, 1.9rem);
+    color: var(--color-texto-principal);
+}
+
+.cuenta-correo {
+    margin: .2rem 0 0;
+    font-size: .9rem;
+}
+
+.chip-rol {
+    padding: .2rem .6rem;
+    border-radius: 999px;
+    background: var(--color-primario);
+    color: #1a1400;
+    font-size: .68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+}
+
+/* ==========================================================================
+   Aviso de éxito
+   ========================================================================== */
+.aviso-cuenta {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    margin: 0 0 1.5rem;
+    padding: .8rem 1rem;
+    border-radius: 10px;
+    font-size: .9rem;
+}
+
+.aviso-exito {
+    background: rgba(53, 199, 89, .12);
+    border: 1px solid rgba(53, 199, 89, .35);
+    color: #6adf8f;
+}
+
+.aviso-exito .bi {
+    color: #35c759;
+}
+
+/* ==========================================================================
+   Accesos rápidos
+   ========================================================================== */
+.cuenta-accesos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: .85rem;
+    margin-bottom: 1.75rem;
+}
+
+.cuenta-acceso {
+    display: flex;
+    align-items: center;
+    gap: .8rem;
+    padding: 1rem 1.1rem;
+    min-height: 44px;
+    background: var(--color-superficie-oscura);
+    border: 1px solid var(--color-borde-oscuro);
+    border-radius: 14px;
+    color: var(--color-texto-principal);
+    transition: border-color .2s ease, transform .15s ease;
+}
+
+.cuenta-acceso:hover,
+.cuenta-acceso:focus-visible {
+    border-color: rgba(217, 176, 74, .5);
+    color: var(--color-texto-principal);
+    transform: translateY(-2px);
+}
+
+.cuenta-acceso .bi {
+    font-size: 1.4rem;
+    color: var(--color-primario);
+}
+
+.cuenta-acceso strong {
+    display: block;
+    font-size: 1rem;
+}
+
+.cuenta-acceso span {
+    display: block;
+    font-size: .78rem;
+    color: var(--color-texto-secundario);
+}
+
+.cuenta-acceso-admin {
+    border-color: rgba(217, 176, 74, .45);
+    background: rgba(217, 176, 74, .07);
+}
+
+/* ==========================================================================
+   Dos columnas: formularios a la izquierda, pedidos a la derecha
+   ========================================================================== */
+.cuenta-columnas {
+    display: grid;
+    gap: 1.5rem;
+}
+
+@media (min-width: 992px) {
+    .cuenta-columnas {
+        grid-template-columns: 1fr 1.1fr;
+        align-items: start;
+    }
+}
+
+.cuenta-col-formularios,
+.cuenta-col-pedidos {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+/* ==========================================================================
+   Tarjetas
+   ========================================================================== */
+.tarjeta-cuenta {
+    background: var(--color-superficie-oscura);
+    border: 1px solid var(--color-borde-oscuro);
+    border-radius: 16px;
+    padding: 1.4rem;
+}
+
+.tarjeta-cuenta h2 {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    margin: 0 0 1.15rem;
+    font-size: 1.05rem;
+    color: var(--color-texto-principal);
+}
+
+.tarjeta-cuenta h2 .bi {
+    color: var(--color-primario);
+}
+
+/* --- Cabecera plegable ("Contraseña") --- */
+.toggle-cuenta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    min-height: 44px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: inherit;
+    text-align: left;
+    cursor: pointer;
+}
+
+.toggle-cuenta h2 {
+    margin: 0;
+}
+
+.toggle-cuenta-flecha {
+    color: var(--color-texto-secundario);
+    transition: transform .2s ease;
+}
+
+.toggle-cuenta {
+    scroll-margin-bottom: 112px;
+}
+
+.toggle-cuenta[aria-expanded="true"] .toggle-cuenta-flecha {
+    transform: rotate(180deg);
+}
+
+/* --- Formularios --- */
+.form-cuenta {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.campo-cuenta {
+    position: relative;
+    /* Hueco para el mensaje de error del formulario, ver .error-cuenta. */
+}
+
+.campo-cuenta label {
+    display: block;
+    margin-bottom: .4rem;
+    font-size: .85rem;
+    font-weight: 600;
+    color: var(--color-texto-principal);
+}
+
+.campo-cuenta input {
+    width: 100%;
+    min-height: 48px;
+    padding: .7rem .9rem;
+    border: 1px solid var(--color-borde-oscuro);
+    border-radius: 10px;
+    background: #101010;
+    color: var(--color-texto-principal);
+    /* 16px evita que iOS haga zoom al enfocar el campo. */
+    font-size: 16px;
+}
+
+.campo-cuenta input:disabled {
+    color: var(--color-texto-secundario);
+    opacity: .7;
+}
+
+.campo-cuenta input:focus {
+    outline: none;
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px rgba(217, 176, 74, .2);
+}
+
+.campo-nota {
+    margin: .4rem 0 0;
+    font-size: .78rem;
+    color: var(--color-texto-secundario);
+}
+
+.error-cuenta {
+    display: flex;
+    align-items: center;
+    gap: .4rem;
+    margin: 0;
+    font-size: .85rem;
+    color: #ff8a85;
+}
+
+.btn-cuenta {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    padding: .7rem 1.2rem;
+    border: none;
+    border-radius: 10px;
+    background: var(--color-primario);
+    color: #1a1400;
+    font-weight: 700;
+    cursor: pointer;
+    transition: filter .2s ease;
+
+    /*
+      En pantallas cortas (iPhone SE, 667px de alto o menos) este botón puede
+      terminar completamente tapado por la barra inferior fija ya en la carga
+      inicial, sin que la página se haya desplazado nada. El recorte de
+      espacio en la cabecera ayuda en móviles altos, pero para uno corto
+      cualquier ahorro fijo de píxeles se queda corto tarde o temprano.
+
+      scroll-margin-bottom no oculta ni mueve nada por sí solo: le dice a
+      cualquier desplazamiento automático hacia este elemento (el foco por
+      teclado, un lector de pantalla, scrollIntoView) que reserve este hueco
+      al decidir cuánto desplazar. Sin esto, el navegador considera que el
+      botón "ya está en el viewport" (lo está, geométricamente) y no
+      desplaza nada, aunque visualmente quede tapado por la barra.
+    */
+    scroll-margin-bottom: 112px;
+}
+
+.btn-cuenta:hover {
+    filter: brightness(1.08);
+}
+
+.btn-cuenta-secundario {
+    background: rgba(255, 255, 255, .08);
+    color: var(--color-texto-principal);
+}
+
+.btn-cuenta-peligro {
+    margin-top: .75rem;
+    background: rgba(224, 100, 95, .12);
+    border: 1px solid rgba(224, 100, 95, .4);
+    color: #ff8a85;
+}
+
+.btn-cuenta-peligro:hover {
+    background: rgba(224, 100, 95, .2);
+}
+
+.tarjeta-sesion form + form {
+    margin-top: 0;
+}
+
+/* ==========================================================================
+   Pedidos
+   ========================================================================== */
+.sin-pedidos {
+    margin: 0;
+    font-size: .92rem;
+}
+
+.sin-pedidos a {
+    color: var(--color-primario);
+    font-weight: 600;
+}
+
+.lista-pedidos {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.pedido-item {
+    padding: 1rem;
+    border: 1px solid var(--color-borde-oscuro);
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .015);
+}
+
+.pedido-cabecera {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    margin-bottom: .6rem;
+}
+
+.pedido-fecha {
+    font-size: .82rem;
+    color: var(--color-texto-secundario);
+    text-transform: capitalize;
+}
+
+.chip-estado {
+    padding: .2rem .65rem;
+    border-radius: 999px;
+    font-size: .7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .02em;
+    white-space: nowrap;
+}
+
+.chip-estado-pendiente   { background: rgba(217, 176, 74, .15); color: var(--color-primario); }
+.chip-estado-confirmado  { background: rgba(88, 166, 255, .15); color: #79b8ff; }
+.chip-estado-enviado     { background: rgba(88, 166, 255, .15); color: #79b8ff; }
+.chip-estado-entregado   { background: rgba(53, 199, 89, .15);  color: #6adf8f; }
+.chip-estado-cancelado   { background: rgba(224, 100, 95, .15); color: #ff8a85; }
+
+.pedido-lineas {
+    margin: 0 0 .75rem;
+    padding-left: 1.1rem;
+    font-size: .88rem;
+    color: var(--color-texto-principal);
+}
+
+.pedido-talla {
+    color: var(--color-texto-secundario);
+    font-size: .8rem;
+}
+
+.pedido-pie {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: .75rem;
+    padding-top: .6rem;
+    border-top: 1px solid var(--color-borde-oscuro);
+}
+
+.pedido-direccion {
+    display: flex;
+    align-items: center;
+    gap: .35rem;
+    font-size: .8rem;
+    color: var(--color-texto-secundario);
+}
+
+.pedido-total {
+    color: var(--color-primario);
+    font-size: 1.05rem;
+}
+
+@media (max-width: 575.98px) {
+    .pedido-pie {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: .3rem;
+    }
+}
+
+/*
+  Móvil: compactar cabecera y accesos rápidos.
+
+  Con 3 tarjetas (favoritos, carrito y, para un admin, panel), el
+  `minmax(150px, 1fr)` de escritorio no cabe en una fila de 390px y se parte
+  en dos, sumando ~186px de alto. Eso empujaba el botón "Guardar cambios" del
+  primer formulario justo detrás de la barra inferior fija: un usuario real,
+  al cargar la página sin desplazarse, tocaba el carrito en vez de guardar.
+
+  Aquí se fuerzan 3 columnas siempre y se compactan las tarjetas (icono
+  arriba, texto más pequeño), lo que además de verse mejor libera ese hueco.
+*/
+@media (max-width: 575.98px) {
+    .cuenta-cabecera {
+        gap: .8rem;
+        margin-bottom: .7rem;
+    }
+
+    .cuenta-avatar {
+        width: 52px;
+        height: 52px;
+        font-size: 1.3rem;
+    }
+
+    .cuenta-accesos {
+        grid-template-columns: repeat(3, 1fr);
+        gap: .5rem;
+        margin-bottom: .85rem;
+    }
+
+    .cuenta-acceso {
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        gap: .3rem;
+        padding: .7rem .4rem;
+    }
+
+    .cuenta-acceso .bi {
+        font-size: 1.2rem;
+    }
+
+    .cuenta-acceso strong {
+        font-size: .85rem;
+    }
+
+    .cuenta-acceso span {
+        font-size: .66rem;
+        line-height: 1.2;
+    }
+
+    /*
+      La tarjeta "Mis datos" y el propio botón de "Contraseña" (el que se
+      pliega) quedan ANTES de cualquier desplazamiento: al entrar a la
+      página, sin que nada se haya movido todavía, ambos deben caer por
+      encima de la barra inferior. Reducir su relleno es lo único que mueve
+      esa posición de reposo, porque aquí no hay scroll que ajustar.
+    */
+    .cuenta-col-formularios {
+        gap: .85rem;
+    }
+
+    .tarjeta-cuenta {
+        padding: 1rem;
+    }
+
+    .tarjeta-cuenta h2 {
+        margin-bottom: .8rem;
+    }
+
+    .form-cuenta {
+        gap: .75rem;
+    }
+
+    .campo-cuenta label {
+        margin-bottom: .3rem;
+    }
+}
+
+/*
+  Defensa adicional: si algún día un enlace ancla o el foco por teclado
+  llevan a un elemento de esta página, que el navegador reserve el hueco de
+  la barra inferior al calcular hasta dónde desplazarse.
+*/
+@media (max-width: 991.98px) {
+    html:has(.barra-inferior) {
+        scroll-padding-bottom: 112px;
+    }
+}

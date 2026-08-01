@@ -72,14 +72,20 @@ body .navbar-toggler:focus {
 }
 
 @media (max-width: 991.98px) {
-    /* En móvil la barra superior solo lleva la marca: centrada, porque no
-       hay nada más que compita por el espacio. */
+    /* En móvil la barra superior lleva la marca centrada y el corazón de
+       favoritos a la derecha. El centrado sale de repartir el espacio entre
+       tres piezas —hueco, marca, corazón— y no de un `justify-content: center`,
+       que descentraría la marca al haber algo solo a un lado. */
     body .navbar .container-fluid {
-        justify-content: center;
+        justify-content: space-between;
+        flex-wrap: nowrap;
     }
 
     body .navbar-brand.marca-corona {
         margin-right: 0;
+        /* Que el nombre no empuje al corazón fuera en pantallas estrechas. */
+        min-width: 0;
+        white-space: nowrap;
     }
 
     /* Menú desplegado: cada enlace como fila cómoda de tocar, no texto apretado. */

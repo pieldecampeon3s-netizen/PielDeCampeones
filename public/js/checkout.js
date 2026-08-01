@@ -65,10 +65,12 @@
 
     // --- Mensaje ------------------------------------------------------------
 
-    function construirMensaje(datos) {
+    function construirMensaje(datos, numeroPedido) {
         const lineas = [];
 
         lineas.push('*NUEVO PEDIDO — Piel de Campeón*');
+        // El número permite localizarlo en el panel sin preguntar nada más.
+        if (numeroPedido) lineas.push(`Pedido n.º ${numeroPedido}`);
         lineas.push('');
         lineas.push('*Datos de contacto*');
         lineas.push(`Nombre: ${datos.nombre}`);
@@ -95,7 +97,7 @@
 
     // --- Envío --------------------------------------------------------------
 
-    form.addEventListener('submit', function (evento) {
+    form.addEventListener('submit', async function (evento) {
         evento.preventDefault();
 
         // Se validan todos para marcarlos a la vez, no de uno en uno.
@@ -119,12 +121,28 @@
             referencia: form.elements.referencia.value.trim(),
         };
 
-        const url = 'https://wa.me/' + pedido.whatsapp + '?text=' + encodeURIComponent(construirMensaje(datos));
-
         if (boton) {
             boton.disabled = true;
             boton.innerHTML = '<i class="bi bi-whatsapp"></i> Abriendo WhatsApp…';
         }
+
+        // El pedido se registra antes de salir a WhatsApp: si el cliente no
+        // llega a enviar el mensaje, al menos queda constancia de que lo pidió.
+        let numeroPedido = null;
+        try {
+            const respuesta = await fetch('/checkout/pedido', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos),
+            });
+            const guardado = await respuesta.json();
+            if (guardado.success) numeroPedido = guardado.pedidoId;
+        } catch (error) {
+            // Que no se pueda guardar no debe impedir la venta.
+            console.error('No se pudo registrar el pedido:', error);
+        }
+
+        const url = 'https://wa.me/' + pedido.whatsapp + '?text=' + encodeURIComponent(construirMensaje(datos, numeroPedido));
 
         // Algunos navegadores móviles bloquean window.open si no lo ven como
         // consecuencia directa del toque: navegar en la misma pestaña es más

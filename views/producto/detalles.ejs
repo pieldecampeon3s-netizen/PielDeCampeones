@@ -31,7 +31,7 @@
 
                 <form id="form-add-to-cart" data-product-id="<%= producto.id %>" class="purchase-form mt-4">
 
-                    <% if ((producto.tallas || []).length) { %>
+                    <% if ((producto.tallasStock || []).length) { %>
                         <div class="selector-tallas mb-4">
                             <div class="tallas-cabecera">
                                 <span class="form-label mb-0">Talla:</span>
@@ -41,13 +41,15 @@
                             </div>
 
                             <div class="tallas-opciones" role="radiogroup" aria-label="Elige tu talla">
-                                <% producto.tallas.forEach(function (talla) { %>
+                                <% producto.tallasStock.forEach(function (t) { %>
                                     <input type="radio"
                                            class="talla-radio"
                                            name="talla"
-                                           id="talla-<%= talla %>"
-                                           value="<%= talla %>">
-                                    <label class="talla-opcion" for="talla-<%= talla %>"><%= talla %></label>
+                                           id="talla-<%= t.talla %>"
+                                           value="<%= t.talla %>"
+                                           data-stock="<%= t.stock %>"
+                                           <%= t.stock <= 0 ? 'disabled' : '' %>>
+                                    <label class="talla-opcion <%= t.stock <= 0 ? 'talla-agotada' : '' %>" for="talla-<%= t.talla %>"><%= t.talla %></label>
                                 <% }); %>
                             </div>
 
@@ -57,19 +59,60 @@
                         </div>
                     <% } %>
 
-                    <div class="row align-items-center">
-                        <div class="col-md-4">
-                            <label for="quantity" class="form-label">Cantidad:</label>
-                            <input type="number" id="quantity" class="form-control quantity-input" value="1" min="1" max="<%= producto.stock %>">
+                    <%#
+                      Cantidad y botón en la misma fila, centrados. Los botones
+                      de − y + evitan tener que escribir el número, que en un
+                      teclado de móvil es incómodo.
+
+                      `data-stock` lo lee producto.js para no dejar pasar del
+                      stock. El servidor lo comprueba igualmente: el navegador
+                      es una comodidad, no una barrera.
+                    %>
+                    <div class="compra-fila">
+                        <div class="selector-cantidad" data-stock="<%= producto.stock %>">
+                            <label for="quantity">Cantidad</label>
+
+                            <div class="cantidad-control">
+                                <button type="button"
+                                        class="cantidad-btn"
+                                        data-paso="-1"
+                                        aria-label="Quitar una unidad"
+                                        <%= producto.stock > 0 ? 'disabled' : 'disabled' %>>
+                                    <i class="bi bi-dash-lg"></i>
+                                </button>
+
+                                <input type="number"
+                                       id="quantity"
+                                       class="cantidad-valor"
+                                       value="1"
+                                       min="1"
+                                       max="<%= producto.stock %>"
+                                       inputmode="numeric"
+                                       aria-describedby="avisoStock"
+                                       <%= producto.stock > 0 ? '' : 'disabled' %>>
+
+                                <button type="button"
+                                        class="cantidad-btn"
+                                        data-paso="1"
+                                        aria-label="Añadir una unidad"
+                                        <%= producto.stock > 1 ? '' : 'disabled' %>>
+                                    <i class="bi bi-plus-lg"></i>
+                                </button>
+                            </div>
+
+                            <p class="aviso-stock" id="avisoStock" aria-live="polite">
+                                <% if (producto.stock > 0 && producto.stock <= 10) { %>
+                                    Quedan <%= producto.stock %> unidades
+                                <% } %>
+                            </p>
                         </div>
-                        <div class="col-md-8">
-                            <button type="submit"
-                                    class="btn btn-brand-accent btn-lg w-100 mt-3 mt-md-0"
-                                    <%= producto.stock > 0 ? '' : 'disabled' %>>
-                                <i class="bi bi-cart-plus-fill me-2"></i>
-                                <%= producto.stock > 0 ? 'Agregar al Carrito' : 'Agotado' %>
-                            </button>
-                        </div>
+
+                        <button type="submit"
+                                class="btn btn-brand-accent btn-lg btn-agregar"
+                                <%= producto.stock > 0 ? '' : 'disabled' %>>
+                            <i class="bi bi-cart-plus-fill me-2"></i>
+                            <%= producto.stock > 0 ? 'Agregar al Carrito' : 'Agotado' %>
+                        </button>
                     </div>
                 </form>
             </div>
@@ -92,8 +135,14 @@
     border: 1px solid var(--color-borde-claro);
 }
 
-.product-details-panel {
-    padding-left: 2rem;
+/* El hueco a la izquierda separa la columna de texto de la foto en el diseño
+   de escritorio a dos columnas. Sin el @media también se aplicaba en móvil,
+   donde solo hay una columna: desplazaba el recuadro de compra 32px hacia
+   la derecha, descentrándolo del contenedor. */
+@media (min-width: 992px) {
+    .product-details-panel {
+        padding-left: 2rem;
+    }
 }
 
 .breadcrumb {

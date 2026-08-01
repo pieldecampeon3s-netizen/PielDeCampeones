@@ -1,0 +1,226 @@
+<%#
+  Mi cuenta. Antes no existía: "Mi cuenta" apuntaba siempre a /account/login,
+  así que a alguien ya identificado el login lo mandaba de vuelta al inicio
+  sin explicación — parecía que el enlace estaba roto.
+
+  Pasa por el layout normal (con navbar, footer y barra inferior), a
+  diferencia de login/checkout, que van solos.
+
+  Espera: usuario, pedidos, totalFavoritos, exito, errorPerfil, errorContrasena
+%>
+<div class="container py-4 py-lg-5 pagina-cuenta">
+
+    <div class="cuenta-cabecera">
+        <span class="cuenta-avatar" aria-hidden="true">
+            <%= (usuario.nombre || usuario.email).trim().charAt(0).toUpperCase() %>
+        </span>
+
+        <div>
+            <h1>
+                <%= usuario.nombre || 'Mi cuenta' %>
+                <% if (esAdmin) { %>
+                    <span class="chip-rol">Administrador</span>
+                <% } %>
+            </h1>
+            <p class="cuenta-correo"><%= usuario.email %></p>
+        </div>
+    </div>
+
+    <% if (typeof exito !== 'undefined' && exito) { %>
+        <p class="aviso-cuenta aviso-exito">
+            <i class="bi bi-check-circle-fill"></i>
+            <%= exito === 'contrasena' ? 'Tu contraseña se actualizó correctamente.' : 'Tus datos se guardaron correctamente.' %>
+        </p>
+    <% } %>
+
+    <%# Accesos rápidos: favoritos y, si es admin, el panel. %>
+    <div class="cuenta-accesos">
+        <a href="/favoritos" class="cuenta-acceso">
+            <i class="bi bi-heart-fill"></i>
+            <div>
+                <strong><%= totalFavoritos %></strong>
+                <span><%= totalFavoritos === 1 ? 'favorito guardado' : 'favoritos guardados' %></span>
+            </div>
+        </a>
+
+        <a href="/carrito" class="cuenta-acceso">
+            <i class="bi bi-cart-fill"></i>
+            <div>
+                <strong>Carrito</strong>
+                <span>Ver mi carrito</span>
+            </div>
+        </a>
+
+        <% if (esAdmin) { %>
+            <a href="/admin" class="cuenta-acceso cuenta-acceso-admin">
+                <i class="bi bi-speedometer2"></i>
+                <div>
+                    <strong>Panel</strong>
+                    <span>Administración</span>
+                </div>
+            </a>
+        <% } %>
+    </div>
+
+    <div class="cuenta-columnas">
+
+        <%# --- Columna izquierda: datos y seguridad --- %>
+        <div class="cuenta-col-formularios">
+
+            <section class="tarjeta-cuenta">
+                <h2><i class="bi bi-person-lines-fill"></i> Mis datos</h2>
+
+                <form action="/account/perfil" method="post" class="form-cuenta">
+                    <div class="campo-cuenta">
+                        <label for="nombre">Nombre</label>
+                        <input type="text"
+                               id="nombre"
+                               name="nombre"
+                               value="<%= usuario.nombre || '' %>"
+                               autocomplete="name"
+                               required>
+                    </div>
+
+                    <div class="campo-cuenta">
+                        <label for="telefono">Teléfono</label>
+                        <input type="tel"
+                               id="telefono"
+                               name="telefono"
+                               value="<%= usuario.telefono || '' %>"
+                               placeholder="Ej: 300 123 4567"
+                               autocomplete="tel">
+                    </div>
+
+                    <div class="campo-cuenta">
+                        <label>Correo</label>
+                        <input type="email" value="<%= usuario.email %>" disabled>
+                        <p class="campo-nota">El correo no se puede cambiar desde aquí.</p>
+                    </div>
+
+                    <% if (typeof errorPerfil !== 'undefined' && errorPerfil) { %>
+                        <p class="error-cuenta"><i class="bi bi-exclamation-circle"></i> <%= errorPerfil %></p>
+                    <% } %>
+
+                    <button type="submit" class="btn-cuenta">Guardar cambios</button>
+                </form>
+            </section>
+
+            <%#
+              Plegado por defecto: en móvil, tener siempre a la vista 3 campos
+              más de contraseña empujaba el botón de la tarjeta anterior (y
+              este mismo) hasta la franja que tapa la barra inferior fija.
+              Se abre solo si el usuario lo pide, o si ya viene con un error
+              que contar (para que no tenga que buscarlo).
+
+              Se apoya en el "collapse" de Bootstrap, ya cargado en todo el
+              sitio: sin JavaScript propio.
+            %>
+            <% const abrirContrasena = typeof errorContrasena !== 'undefined' && errorContrasena; %>
+            <section class="tarjeta-cuenta">
+                <button type="button"
+                        class="toggle-cuenta"
+                        data-bs-toggle="collapse"
+                        data-bs-target="#colContrasena"
+                        aria-expanded="<%= abrirContrasena ? 'true' : 'false' %>"
+                        aria-controls="colContrasena">
+                    <h2><i class="bi bi-shield-lock-fill"></i> Contraseña</h2>
+                    <i class="bi bi-chevron-down toggle-cuenta-flecha"></i>
+                </button>
+
+                <div class="collapse<%= abrirContrasena ? ' show' : '' %>" id="colContrasena">
+                    <form action="/account/contrasena" method="post" class="form-cuenta pt-3">
+                        <div class="campo-cuenta">
+                            <label for="actual">Contraseña actual</label>
+                            <input type="password" id="actual" name="actual" autocomplete="current-password" required>
+                        </div>
+
+                        <div class="campo-cuenta">
+                            <label for="nueva">Contraseña nueva</label>
+                            <input type="password" id="nueva" name="nueva" autocomplete="new-password" minlength="8" required>
+                        </div>
+
+                        <div class="campo-cuenta">
+                            <label for="confirmar">Confirmar contraseña nueva</label>
+                            <input type="password" id="confirmar" name="confirmar" autocomplete="new-password" minlength="8" required>
+                        </div>
+
+                        <% if (abrirContrasena) { %>
+                            <p class="error-cuenta"><i class="bi bi-exclamation-circle"></i> <%= errorContrasena %></p>
+                        <% } %>
+
+                        <button type="submit" class="btn-cuenta">Cambiar contraseña</button>
+                    </form>
+                </div>
+            </section>
+
+            <section class="tarjeta-cuenta tarjeta-sesion">
+                <h2><i class="bi bi-box-arrow-right"></i> Sesión</h2>
+
+                <form action="/account/logout" method="post">
+                    <button type="submit" class="btn-cuenta btn-cuenta-secundario">
+                        Cerrar sesión
+                    </button>
+                </form>
+
+                <form action="/account/cerrar-todo" method="post" id="formCerrarTodo">
+                    <button type="submit" class="btn-cuenta btn-cuenta-peligro">
+                        Cerrar sesión en todos los dispositivos
+                    </button>
+                </form>
+                <p class="campo-nota">
+                    Úsalo si crees que alguien más entró a tu cuenta.
+                </p>
+            </section>
+        </div>
+
+        <%# --- Columna derecha: historial de pedidos --- %>
+        <div class="cuenta-col-pedidos">
+            <section class="tarjeta-cuenta">
+                <h2><i class="bi bi-bag-check-fill"></i> Mis pedidos</h2>
+
+                <% if (!pedidos.length) { %>
+                    <p class="sin-pedidos">
+                        Todavía no tienes pedidos.
+                        <a href="/">Ver la tienda</a>
+                    </p>
+                <% } else { %>
+                    <ul class="lista-pedidos">
+                        <% pedidos.forEach(function (pedido) { %>
+                            <li class="pedido-item">
+                                <div class="pedido-cabecera">
+                                    <span class="pedido-fecha">
+                                        <%= new Date(pedido.creadoEn).toLocaleDateString('es-CO', {
+                                            day: 'numeric', month: 'short', year: 'numeric',
+                                        }) %>
+                                    </span>
+                                    <span class="chip-estado chip-estado-<%= pedido.estado.toLowerCase() %>">
+                                        <%= pedido.estado %>
+                                    </span>
+                                </div>
+
+                                <ul class="pedido-lineas">
+                                    <% pedido.lineas.forEach(function (linea) { %>
+                                        <li>
+                                            <%= linea.cantidad %>x <%= linea.nombreProducto %>
+                                            <% if (linea.talla) { %>
+                                                <span class="pedido-talla">talla <%= linea.talla %></span>
+                                            <% } %>
+                                        </li>
+                                    <% }); %>
+                                </ul>
+
+                                <div class="pedido-pie">
+                                    <span class="pedido-direccion">
+                                        <i class="bi bi-geo-alt"></i>
+                                        <%= pedido.ciudad %><%= pedido.referencia ? ' · ' + pedido.referencia : '' %>
+                                    </span>
+                                    <strong class="pedido-total"><%= formatCOP(pedido.total) %></strong>
+                                </div>
+                            </li>
+                        <% }); %>
+                    </ul>
+                <% } %>
+            </section>
+        </div>
+    </div>
+</div>

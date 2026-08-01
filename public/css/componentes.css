@@ -101,6 +101,73 @@
     font-size: 1.25rem;
 }
 
+/* ==========================================================================
+   Acceso a favoritos en la barra superior
+   ========================================================================== */
+.nav-favoritos {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* 44px: mínimo cómodo para acertar con el dedo. */
+    width: 44px;
+    height: 44px;
+    flex: none;
+    border-radius: 50%;
+    color: var(--color-primario, #d9b04a);
+    font-size: 1.3rem;
+    transition: background .2s ease, transform .15s ease;
+}
+
+.nav-favoritos:hover,
+.nav-favoritos:focus-visible {
+    background: rgba(217, 176, 74, .14);
+    color: var(--color-primario, #d9b04a);
+}
+
+/* Late al añadir o quitar un favorito: confirma la acción sin un aviso. */
+.nav-favoritos.late {
+    transform: scale(1.2);
+}
+
+#fav-badge {
+    top: 0;
+    right: 0;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 4px;
+    background-color: var(--color-primario, #d9b04a);
+    color: #1a1400;
+    font-size: .68rem;
+    font-weight: 700;
+    line-height: 18px;
+    /* El icono es un corazón: el número necesita separarse para leerse. */
+    border: 2px solid var(--color-fondo-oscuro, #121212);
+}
+
+#fav-badge[hidden] {
+    display: none;
+}
+
+/*
+  Contrapeso del corazón para que la marca siga centrada en móvil. El ancho es
+  el mismo que el del enlace de favoritos.
+*/
+.nav-hueco {
+    width: 44px;
+    height: 44px;
+    flex: none;
+}
+
+/*
+  El atributo hidden lo pisa cualquier regla de display, y estas burbujas
+  tienen la suya. Hay que declararlo explícitamente o saldrían aunque el
+  servidor las marque como ocultas.
+*/
+#cart-badge[hidden],
+#cart-badge-movil[hidden] {
+    display: none !important;
+}
+
 /* La burbuja del carrito usaba bg-danger de Bootstrap; ahora sigue la marca. */
 #cart-badge {
     background-color: var(--color-primario, #d9b04a) !important;

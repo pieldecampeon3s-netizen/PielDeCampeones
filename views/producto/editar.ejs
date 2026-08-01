@@ -1,60 +1,90 @@
-<h1 class="h2"><%= title %>: <%= producto.nombre %></h1>
-<p class="text-muted">Modifica los detalles del producto seleccionado.</p>
-<hr />
-<div class="row">
-    <div class="col-md-8">
-        <form action="/admin/productos/editar" method="post">
-            <input type="hidden" />
-            <input type="hidden" />
-            <input type="hidden" />
-            <div class="text-danger mb-3"></div>
+<div class="container-fluid mt-4 pagina-admin">
+    <h1 class="h2"><%= title %>: <%= producto.nombre %></h1>
+    <p class="text-muted">Modifica los detalles del producto seleccionado.</p>
+    <hr />
 
-            <!-- Campos del formulario (idénticos a los de Crear.cshtml) -->
-            <div class="mb-3">
-                <label for="nombre" class="form-label"></label>
-                <input name="nombre" id="nombre" class="form-control" />
-                <span class="text-danger"><%= (errores && errores.nombre) || '' %></span>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="oem" class="form-label">OEM</label>
-                    <input name="oem" id="oem" class="form-control" />
-                    <span class="text-danger"><%= (errores && errores.oem) || '' %></span>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="idCategoria" class="form-label">Categoría</label>
-                    <select name="idCategoria" id="idCategoria" class="form-select"></select>
-                    <span class="text-danger"><%= (errores && errores.idCategoria) || '' %></span>
-                </div>
-            </div>
-            <div class="row">
-                <div class="col-md-6 mb-3">
-                    <label for="precio" class="form-label"></label>
-                    <input name="precio" id="precio" class="form-control" type="number" step="0.01" />
-                    <span class="text-danger"><%= (errores && errores.precio) || '' %></span>
-                </div>
-                <div class="col-md-6 mb-3">
-                    <label for="stock" class="form-label"></label>
-                    <input name="stock" id="stock" class="form-control" type="number" />
-                    <span class="text-danger"><%= (errores && errores.stock) || '' %></span>
-                </div>
-            </div>
-            <div class="mb-3">
-                <label for="descripcion" class="form-label"></label>
-                <textarea name="descripcion" id="descripcion" class="form-control" rows="3"></textarea>
-                <span class="text-danger"><%= (errores && errores.descripcion) || '' %></span>
-            </div>
-            <div class="mb-3">
-                <label for="imagenNombre"></label>
-                <input name="imagenNombre" id="imagenNombre" class="form-control" />
-                <span><%= (errores && errores.imagenNombre) || '' %></span>
-            </div>
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card order-details-card p-4">
+                <form action="/admin/productos/editar/<%= producto.id %>" method="post" enctype="multipart/form-data" class="form-admin">
 
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                <a href="/admin/productos" class="btn btn-secondary">Cancelar</a>
+                    <div>
+                        <label for="nombre">Nombre del producto</label>
+                        <input name="nombre" id="nombre" class="form-control" value="<%= producto.nombre || '' %>" required />
+                        <span class="text-danger"><%= (errores && errores.nombre) || '' %></span>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="oem">OEM (referencia interna, opcional)</label>
+                            <input name="oem" id="oem" class="form-control" value="<%= producto.oem || '' %>" />
+                            <span class="text-danger"><%= (errores && errores.oem) || '' %></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="idCategoria">Categoría</label>
+                            <select name="idCategoria" id="idCategoria" class="form-select">
+                                <option value="">-- Selecciona una categoría --</option>
+                                <% categorias.forEach(function (c) { %>
+                                    <option value="<%= c.id %>" <%= String(producto.idCategoria) === String(c.id) ? 'selected' : '' %>>
+                                        <%= c.nombre %>
+                                    </option>
+                                <% }); %>
+                            </select>
+                            <span class="text-danger"><%= (errores && errores.idCategoria) || '' %></span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="precio">Precio (COP)</label>
+                        <input name="precio" id="precio" class="form-control" type="number" min="0" step="1" value="<%= producto.precio || '' %>" required />
+                        <span class="text-danger"><%= (errores && errores.precio) || '' %></span>
+                    </div>
+
+                    <fieldset class="tallas-admin">
+                        <legend>Stock por talla</legend>
+                        <% tallasDisponibles.forEach(function (talla) {
+                             var actual = (producto.tallasStock || []).find(function (t) { return t.talla === talla; });
+                             var valor = actual ? actual.stock : 0;
+                        %>
+                            <div class="talla-admin-opcion">
+                                <label class="talla-admin-etiqueta" for="stock-<%= talla %>"><%= talla %></label>
+                                <input type="number"
+                                       min="0"
+                                       step="1"
+                                       inputmode="numeric"
+                                       class="talla-admin-stock"
+                                       id="stock-<%= talla %>"
+                                       name="stock_<%= talla %>"
+                                       value="<%= valor %>">
+                            </div>
+                        <% }); %>
+                        <span class="text-danger"><%= (errores && errores.stock) || '' %></span>
+                    </fieldset>
+
+                    <div>
+                        <label for="descripcion">Descripción</label>
+                        <textarea name="descripcion" id="descripcion" class="form-control" rows="3"><%= producto.descripcion || '' %></textarea>
+                        <span class="text-danger"><%= (errores && errores.descripcion) || '' %></span>
+                    </div>
+
+                    <div>
+                        <label for="imagen">Foto del producto</label>
+                        <div class="foto-admin-actual">
+                            <img src="<%= producto.imagenUrl %>" alt="Foto actual" onerror="this.onerror=null;this.src='/images/placeholder.png';" />
+                            <span class="campo-nota">Foto actual. Sube una nueva solo si quieres reemplazarla.</span>
+                        </div>
+                        <img id="previaFotoAdmin" alt="Vista previa" />
+                        <input type="file" name="imagen" id="imagen" class="form-control" accept="image/png,image/jpeg,image/webp" />
+                        <p class="campo-nota">JPG, PNG o WebP, hasta 5 MB.</p>
+                        <span class="text-danger"><%= (errores && errores.imagen) || '' %></span>
+                    </div>
+
+                    <div class="mt-2 d-flex gap-2 flex-wrap">
+                        <button type="submit" class="btn-admin">Guardar cambios</button>
+                        <a href="/admin/productos" class="btn btn-secondary">Cancelar</a>
+                    </div>
+                </form>
             </div>
-        </form>
+        </div>
     </div>
 </div>
-

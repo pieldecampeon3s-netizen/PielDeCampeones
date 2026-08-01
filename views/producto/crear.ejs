@@ -1,62 +1,82 @@
-<div class="container-fluid mt-4">
+<div class="container-fluid mt-4 pagina-admin">
     <h1 class="h2"><%= title %></h1>
-    <p class="text-muted">Rellena los detalles del nuevo repuesto para añadirlo a tu inventario.</p>
+    <p class="text-muted">Rellena los detalles del nuevo producto para añadirlo al catálogo.</p>
     <hr />
 
     <div class="row">
-        <div class="col-md-8">
+        <div class="col-lg-8">
             <div class="card order-details-card p-4">
-                <form action="/admin/productos/crear" method="post">
-                    <div class="text-danger mb-3"></div>
+                <form action="/admin/productos/crear" method="post" enctype="multipart/form-data" class="form-admin">
 
-                    <div class="mb-3">
-                        <label for="nombre" class="form-label"></label>
-                        <input name="nombre" id="nombre" class="form-control" />
+                    <div>
+                        <label for="nombre">Nombre del producto</label>
+                        <input name="nombre" id="nombre" class="form-control" value="<%= producto.nombre || '' %>" required />
                         <span class="text-danger"><%= (errores && errores.nombre) || '' %></span>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="oEM" class="form-label"></label>
-                            <input name="oEM" id="oEM" class="form-control" />
-                            <span class="text-danger"><%= (errores && errores.oEM) || '' %></span>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="oem">OEM (referencia interna, opcional)</label>
+                            <input name="oem" id="oem" class="form-control" value="<%= producto.oem || '' %>" />
+                            <span class="text-danger"><%= (errores && errores.oem) || '' %></span>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="idCategoria" class="form-label"></label>
+                        <div class="col-md-6">
+                            <label for="idCategoria">Categoría</label>
                             <select name="idCategoria" id="idCategoria" class="form-select">
-                                <option value="">-- Seleccione una categoría --</option>
+                                <option value="">-- Selecciona una categoría --</option>
+                                <% categorias.forEach(function (c) { %>
+                                    <option value="<%= c.id %>" <%= String(producto.idCategoria) === String(c.id) ? 'selected' : '' %>>
+                                        <%= c.nombre %>
+                                    </option>
+                                <% }); %>
                             </select>
                             <span class="text-danger"><%= (errores && errores.idCategoria) || '' %></span>
                         </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="precio" class="form-label"></label>
-                            <input name="precio" id="precio" class="form-control" type="number" step="0.01" />
-                            <span class="text-danger"><%= (errores && errores.precio) || '' %></span>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label for="stock" class="form-label"></label>
-                            <input name="stock" id="stock" class="form-control" type="number" />
-                            <span class="text-danger"><%= (errores && errores.stock) || '' %></span>
-                        </div>
+                    <div>
+                        <label for="precio">Precio (COP)</label>
+                        <input name="precio" id="precio" class="form-control" type="number" min="0" step="1" value="<%= producto.precio || '' %>" required />
+                        <span class="text-danger"><%= (errores && errores.precio) || '' %></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="descripcion" class="form-label"></label>
-                        <textarea name="descripcion" id="descripcion" class="form-control" rows="3"></textarea>
+                    <fieldset class="tallas-admin">
+                        <legend>Stock por talla</legend>
+                        <% tallasDisponibles.forEach(function (talla) {
+                             var actual = (producto.tallasStock || []).find(function (t) { return t.talla === talla; });
+                             var valor = actual ? actual.stock : 0;
+                        %>
+                            <div class="talla-admin-opcion">
+                                <label class="talla-admin-etiqueta" for="stock-<%= talla %>"><%= talla %></label>
+                                <input type="number"
+                                       min="0"
+                                       step="1"
+                                       inputmode="numeric"
+                                       class="talla-admin-stock"
+                                       id="stock-<%= talla %>"
+                                       name="stock_<%= talla %>"
+                                       value="<%= valor %>">
+                            </div>
+                        <% }); %>
+                        <span class="text-danger"><%= (errores && errores.stock) || '' %></span>
+                    </fieldset>
+
+                    <div>
+                        <label for="descripcion">Descripción</label>
+                        <textarea name="descripcion" id="descripcion" class="form-control" rows="3"><%= producto.descripcion || '' %></textarea>
                         <span class="text-danger"><%= (errores && errores.descripcion) || '' %></span>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="imagenUrl" class="form-label"></label>
-                        <input name="imagenUrl" id="imagenUrl" class="form-control" placeholder="Ej: nombre-de-imagen.png" />
-                        <span class="text-danger"><%= (errores && errores.imagenUrl) || '' %></span>
+                    <div>
+                        <label for="imagen">Foto del producto</label>
+                        <img id="previaFotoAdmin" alt="Vista previa" />
+                        <input type="file" name="imagen" id="imagen" class="form-control" accept="image/png,image/jpeg,image/webp" required />
+                        <p class="campo-nota">JPG, PNG o WebP, hasta 5 MB.</p>
+                        <span class="text-danger"><%= (errores && errores.imagen) || '' %></span>
                     </div>
 
-                    <div class="mt-4">
-                        <button type="submit" class="btn btn-primary">Crear Producto</button>
+                    <div class="mt-2 d-flex gap-2 flex-wrap">
+                        <button type="submit" class="btn-admin">Crear producto</button>
                         <a href="/admin/productos" class="btn btn-secondary">Cancelar</a>
                     </div>
                 </form>
@@ -64,6 +84,3 @@
         </div>
     </div>
 </div>
-
-
-

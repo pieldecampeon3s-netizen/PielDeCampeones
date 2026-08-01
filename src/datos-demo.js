@@ -150,10 +150,25 @@ const usuarios = [
   },
 ];
 
+// Igual que hace el reparto real contra la base de datos: mismo total, un
+// número por talla, para que las plantillas tengan algo real que recorrer
+// aunque no haya DATABASE_URL configurada.
+productos.forEach((p) => {
+  const tallas = p.tallas || [];
+  if (!tallas.length) {
+    p.tallasStock = [];
+    return;
+  }
+  const base = Math.floor(p.stock / tallas.length);
+  const resto = p.stock % tallas.length;
+  p.tallasStock = tallas.map((talla, i) => ({ talla, stock: base + (i < resto ? 1 : 0) }));
+});
+
 module.exports = {
   categorias,
   productos,
   usuarios,
+  TALLAS,
 
   listarProductos() {
     return productos.filter((p) => p.estado);

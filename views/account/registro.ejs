@@ -112,23 +112,21 @@
 
             <section>
                 <form action="/account/registro" method="post">
-                    <div class="text-danger mb-3" role="alert"></div>
-
                     <div class="form-floating mb-3">
-                        <input name="email" id="email" class="form-control" autocomplete="email" aria-required="true" placeholder="nombre@ejemplo.com" />
-                        <label for="email" class="form-label"></label>
+                        <input name="email" id="email" class="form-control" autocomplete="email" aria-required="true" placeholder="nombre@ejemplo.com" value="<%= (typeof valores !== 'undefined' && valores && valores.email) || '' %>" />
+                        <label for="email" class="form-label">Correo electrónico</label>
                         <span class="text-danger"><%= (errores && errores.email) || '' %></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input name="password" id="password" class="form-control" type="password" autocomplete="new-password" aria-required="true" placeholder="contraseña" />
-                        <label for="password" class="form-label"></label>
+                        <input name="password" id="password" class="form-control" type="password" autocomplete="new-password" aria-required="true" placeholder="Contraseña" />
+                        <label for="password" class="form-label">Contraseña</label>
                         <span class="text-danger"><%= (errores && errores.password) || '' %></span>
                     </div>
 
                     <div class="form-floating mb-3">
-                        <input name="confirmPassword" id="confirmPassword" class="form-control" type="password" autocomplete="new-password" aria-required="true" placeholder="confirmar contraseña" />
-                        <label for="confirmPassword" class="form-label"></label>
+                        <input name="confirmPassword" id="confirmPassword" class="form-control" type="password" autocomplete="new-password" aria-required="true" placeholder="Confirmar contraseña" />
+                        <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
                         <span class="text-danger"><%= (errores && errores.confirmPassword) || '' %></span>
                     </div>
 

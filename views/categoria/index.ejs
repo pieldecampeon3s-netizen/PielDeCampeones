@@ -1,4 +1,6 @@
 <div class="container-fluid mt-4">
+    <%- include('../partials/admin/aviso-swal') %>
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h1 class="h2"><%= title %></h1>
         <a href="/admin/categorias/crear" class="btn btn-primary" style="background-color: var(--color-primario); border-color: var(--color-primario);">
@@ -21,10 +23,10 @@
                     <% if (categorias && categorias.length > 0) { %>
                         <% (categorias || []).forEach(function (item) { %>
                             <tr>
-                                <td><%= item.id %></td>
-                                <td><strong><%= item.nombre %></strong></td>
-                                <td><%= item.descripcion %></td>
-                                <td class="text-end">
+                                <td data-label="ID"><%= item.id %></td>
+                                <td data-label="Nombre"><strong><%= item.nombre %></strong></td>
+                                <td data-label="Descripción"><%= item.descripcion %></td>
+                                <td class="text-end celda-acciones-tarjeta">
                                     <a href="/admin/categorias/editar/<%= item.id %>" class="btn btn-sm btn-outline-warning">Editar</a>
                                     <a href="/admin/categorias/eliminar/<%= item.id %>" class="btn btn-sm btn-outline-danger ms-2">Eliminar</a>
                                 </td>

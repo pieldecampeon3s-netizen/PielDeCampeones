@@ -1,8 +1,11 @@
 <%#
-  Lista de favoritos. Reutiliza la misma tarjeta que el catálogo, así que el
-  corazón funciona igual aquí: al quitarlo, el producto desaparece al recargar.
+  Lista de favoritos. Sirve para los dos casos:
 
-  Espera: productos, favoritos, formatCOP
+  * Con sesión: el servidor ya trae los productos de la base y los pinta aquí.
+  * Invitado: llega vacía y favoritos.js la rellena desde el localStorage del
+    navegador, que es el único sitio donde están.
+
+  Espera: productos, esInvitado, favoritos, formatCOP
 %>
 <div class="container py-4 py-lg-5">
 
@@ -11,41 +14,62 @@
             <i class="bi bi-heart-fill"></i>
             Mis favoritos
         </h1>
-        <p><%= productos.length %> <%= productos.length === 1 ? 'camiseta guardada' : 'camisetas guardadas' %></p>
-    </div>
-
-    <% if (productos.length) { %>
-        <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 g-md-4">
-            <% productos.forEach(function (producto) { %>
-                <div class="col">
-                    <%- include('../partials/product-card', { producto: producto }) %>
-                </div>
-            <% }); %>
-        </div>
-    <% } else { %>
-        <div class="sin-resultados">
-            <i class="bi bi-heart"></i>
-
-            <h3>Aún no has guardado nada</h3>
-
-            <p>
-                Toca el corazón de cualquier camiseta para guardarla aquí
-                y encontrarla rápido más adelante.
-            </p>
-
-            <a href="/" class="btn btn-brand-accent">
-                Ver la tienda
-            </a>
-        </div>
-    <% } %>
-</div>
-
-<%# Los favoritos viven en la sesión: conviene decirlo, no descubrirlo al perderlos. %>
-<% if (productos.length) { %>
-    <div class="container">
-        <p class="aviso-favoritos">
-            <i class="bi bi-info-circle"></i>
-            Se guardan en este navegador. Crea una cuenta para conservarlos siempre.
+        <p id="favoritosCuenta">
+            <% if (esInvitado) { %>
+                <%# Lo escribe favoritos.js cuando sepa cuántos hay. %>
+                Cargando…
+            <% } else { %>
+                <%= productos.length %>
+                <%= productos.length === 1 ? 'camiseta guardada' : 'camisetas guardadas' %>
+            <% } %>
         </p>
     </div>
-<% } %>
+
+    <%# La rejilla la usan los dos: el servidor la llena, o favoritos.js. %>
+    <div class="row row-cols-2 row-cols-md-3 row-cols-xl-4 g-3 g-md-4" id="listaFavoritos">
+        <% productos.forEach(function (producto) { %>
+            <div class="col">
+                <%- include('../partials/product-card', { producto: producto }) %>
+            </div>
+        <% }); %>
+    </div>
+
+    <%#
+      Estado vacío. Con sesión se decide aquí; para un invitado se manda oculto
+      y favoritos.js lo muestra si su navegador no tiene nada guardado.
+    %>
+    <div class="sin-resultados"
+         id="favoritosVacio"
+         <%= esInvitado || productos.length ? 'hidden' : '' %>>
+        <i class="bi bi-heart"></i>
+
+        <h3>Aún no has guardado nada</h3>
+
+        <p>
+            Toca el corazón de cualquier camiseta para guardarla aquí
+            y encontrarla rápido más adelante.
+        </p>
+
+        <a href="/" class="btn btn-brand-accent">
+            Ver la tienda
+        </a>
+    </div>
+
+    <%#
+      Aviso según quién mire: al invitado le interesa saber que se le pueden
+      perder; a quien tiene cuenta, que ya están a salvo.
+    %>
+    <% if (esInvitado) { %>
+        <p class="aviso-favoritos" id="avisoInvitado" hidden>
+            <i class="bi bi-info-circle"></i>
+            Se guardan solo en este navegador.
+            <a href="/account/login">Inicia sesión</a> y se quedarán en tu cuenta,
+            disponibles desde cualquier dispositivo.
+        </p>
+    <% } else if (productos.length) { %>
+        <p class="aviso-favoritos">
+            <i class="bi bi-check-circle"></i>
+            Guardados en tu cuenta: los verás desde cualquier dispositivo.
+        </p>
+    <% } %>
+</div>

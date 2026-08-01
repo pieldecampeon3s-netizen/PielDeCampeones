@@ -1,20 +1,24 @@
-<h1 class="h2 text-danger"><%= title %></h1>
-<h3>¿Estás seguro de que quieres eliminar este producto?</h3>
-<p class="text-warning">Esta acción no se puede deshacer.</p>
-<div>
-    <hr />
-    <dl class="row">
-        <dt class="col-sm-3">Nombre</dt>
-        <dd class="col-sm-9"><%= producto.nombre %></dd>
-        <dt class="col-sm-3">Categoría</dt>
-        <dd class="col-sm-9"><%= producto.nombreCategoria %></dd>
-        <dt class="col-sm-3">Precio</dt>
-        <dd class="col-sm-9"><%= formatCOP(producto.precio) %></dd>
-    </dl>
+<div class="container-fluid mt-4 pagina-admin">
+    <h1 class="h2"><%= title %></h1>
+    <h3>¿Ocultar este producto del catálogo?</h3>
+    <p class="campo-nota">
+        Dejará de verse en la tienda, pero no se borra ni pierde su historial de pedidos.
+        Puedes reactivarlo cuando quieras desde el listado de productos.
+    </p>
+    <div>
+        <hr />
+        <dl class="row">
+            <dt class="col-sm-3">Nombre</dt>
+            <dd class="col-sm-9"><%= producto.nombre %></dd>
+            <dt class="col-sm-3">Categoría</dt>
+            <dd class="col-sm-9"><%= producto.nombreCategoria %></dd>
+            <dt class="col-sm-3">Precio</dt>
+            <dd class="col-sm-9"><%= formatCOP(producto.precio) %></dd>
+        </dl>
 
-    <form action="/admin/productos/eliminar" method="post">
-        <input type="hidden" />
-        <input type="submit" value="Sí, Eliminar Producto" class="btn btn-danger" />
-        <a href="/admin/productos" class="btn btn-secondary">Cancelar</a>
-    </form>
+        <form action="/admin/productos/eliminar/<%= producto.id %>" method="post">
+            <button type="submit" class="btn-admin">Sí, Ocultar Producto</button>
+            <a href="/admin/productos" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
 </div>

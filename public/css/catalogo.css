@@ -820,11 +820,15 @@
    ========================================================================== */
 .cabecera-favoritos {
     margin-bottom: 1.75rem;
+    text-align: center;
 }
 
 .cabecera-favoritos h1 {
     display: flex;
     align-items: center;
+    /* El h1 es flex por el icono: `text-align` del padre no lo centra, hay que
+       centrar el propio contenido del flex. */
+    justify-content: center;
     gap: .6rem;
     margin: 0;
     color: #fff;

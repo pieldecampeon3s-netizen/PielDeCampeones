@@ -42,6 +42,11 @@
         <link rel="stylesheet" href="<%= hoja %>" />
     <% }); %>
 
+    <%# SweetAlert2 solo en el panel de administración: la tienda pública no lo usa. %>
+    <% if (typeof cargarSweetAlert !== 'undefined' && cargarSweetAlert) { %>
+        <link rel="stylesheet" href="/vendor/sweetalert2/sweetalert2.min.css" />
+    <% } %>
+
     <%# Ajustes de móvil: va el último para poder sobreescribir a Bootstrap y a site.css %>
     <link rel="stylesheet" href="/css/movil.css" />
 
@@ -102,7 +107,10 @@
     </style>
 </head>
 <body class="<%= typeof cuerpoClase !== 'undefined' ? cuerpoClase : '' %>"
-      data-pagina="<%= typeof pagina !== 'undefined' ? pagina : '' %>">
+      data-pagina="<%= typeof pagina !== 'undefined' ? pagina : '' %>"
+      <%# favoritos.js necesita saber si hay sesión: con ella los favoritos van
+          a la base; sin ella, al localStorage del navegador. %>
+      data-sesion="<%= usuario ? '1' : '0' %>">
     <%#
       Páginas de pago: sin navbar ni footer. Menos distracciones en el paso
       donde el cliente decide, que es la práctica habitual en tiendas.
@@ -147,6 +155,10 @@
         <script src="<%= archivo %>" defer></script>
     <% }); %>
 
+    <% if (typeof cargarSweetAlert !== 'undefined' && cargarSweetAlert) { %>
+        <script src="/vendor/sweetalert2/sweetalert2.min.js"></script>
+    <% } %>
+
     <script>
         // Añadir al carrito desde cualquier tarjeta de producto
         document.addEventListener('DOMContentLoaded', function () {
@@ -182,14 +194,20 @@
             }
         });
 
-        // Contador del carrito: hay dos, el de la navbar (escritorio) y el de
-        // la barra inferior (móvil). Se actualizan los dos a la vez.
+        /*
+          Contador del carrito: hay dos, el de la barra superior y el de la
+          inferior. Se actualizan los dos a la vez.
+
+          Se usa el atributo `hidden` y no `style.display`, para que coincida
+          con lo que pinta el servidor: mezclar los dos mecanismos deja la
+          burbuja en un estado que ninguno de los dos controla del todo.
+        */
         function actualizarBadge(cantidad) {
             ['cart-badge', 'cart-badge-movil'].forEach(function (id) {
                 const badge = document.getElementById(id);
                 if (!badge) return;
                 badge.textContent = cantidad;
-                badge.style.display = cantidad > 0 ? 'inline-flex' : 'none';
+                badge.hidden = cantidad <= 0;
             });
         }
 
@@ -200,7 +218,11 @@
                 .catch(() => { });
         };
 
-        document.addEventListener('DOMContentLoaded', window.updateCartCount);
+        /*
+          Ya NO se consulta al cargar: el servidor pinta el número correcto y
+          preguntarlo otra vez solo servía para provocar el parpadeo. Se llama
+          a updateCartCount() después de añadir algo al carrito.
+        */
     </script>
 
     <%# Animaciones por scroll (IntersectionObserver) %>

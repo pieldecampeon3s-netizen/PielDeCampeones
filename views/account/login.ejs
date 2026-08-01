@@ -7,11 +7,10 @@
   ahora pasa por el layout con `soloContenido`, que le da las librerías locales
   sin navbar ni pie.
 
-  OJO: todavía no hay autenticación real. El formulario envía a
-  POST /account/login, que hoy solo responde con un aviso. Cuando conectes
-  Supabase Auth, esa ruta es el único sitio que hay que tocar.
+  La sesión se maneja con un JWT en cookie httpOnly (ver src/auth.js), no con
+  Supabase Auth: los usuarios viven en nuestra tabla `usuarios`.
 
-  Espera (opcionales): aviso, valores
+  Espera (opcionales): aviso, valores, volver
 %>
 <div class="login-pagina">
     <div class="login-tarjeta">
@@ -77,6 +76,10 @@
             <% } %>
 
             <form action="/account/login" method="post" id="formLogin" novalidate>
+
+                <%# A dónde volver tras iniciar sesión. El servidor solo
+                    acepta rutas internas: ver la comprobación en server.js. %>
+                <input type="hidden" name="volver" value="<%= typeof volver !== 'undefined' ? volver : '' %>">
 
                 <div class="login-campo">
                     <label for="email">Correo electrónico</label>
