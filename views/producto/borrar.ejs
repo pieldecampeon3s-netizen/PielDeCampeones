@@ -1,0 +1,38 @@
+<div class="container-fluid mt-4 pagina-admin">
+    <h1 class="h2 text-danger"><%= title %></h1>
+    <h3>¿Borrar este producto para siempre?</h3>
+    <p class="campo-nota">
+        <strong>Esta acción no se puede deshacer.</strong> El producto desaparece por completo
+        de la base de datos, junto con sus tallas y stock. Los pedidos que ya se hicieron con
+        él no se ven afectados: conservan su propia copia del nombre y el precio.
+    </p>
+    <p class="campo-nota">
+        Si solo quieres que deje de verse en la tienda mientras decides, usa
+        <a href="/admin/productos">"Ocultar"</a> en vez de esto — eso sí se puede deshacer.
+    </p>
+
+    <div>
+        <hr />
+        <div class="d-flex align-items-center gap-3 mb-3">
+            <img src="<%= producto.imagenUrl %>" style="width: 64px; height: 64px; object-fit: cover; border-radius: 8px;" onerror="this.onerror=null;this.src='/images/placeholder.png';" />
+            <div>
+                <strong><%= producto.nombre %></strong><br>
+                <small class="text-muted">OEM: <%= producto.oem || '—' %></small>
+            </div>
+        </div>
+        <dl class="row">
+            <dt class="col-sm-3">Categoría</dt>
+            <dd class="col-sm-9"><%= producto.nombreCategoria %></dd>
+            <dt class="col-sm-3">Precio</dt>
+            <dd class="col-sm-9"><%= formatCOP(producto.precio) %></dd>
+            <dt class="col-sm-3">Stock total</dt>
+            <dd class="col-sm-9"><%= producto.stock %></dd>
+        </dl>
+
+        <form action="/admin/productos/borrar/<%= producto.id %>" method="post"
+              onsubmit='return confirm("Última confirmación: esto borra el producto para siempre y no se puede deshacer. ¿Continuar?")'>
+            <button type="submit" class="btn btn-danger">Sí, borrar para siempre</button>
+            <a href="/admin/productos" class="btn btn-secondary">Cancelar</a>
+        </form>
+    </div>
+</div>

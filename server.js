@@ -82,7 +82,7 @@ const subirImagenProducto = multer({
       cb(null, `producto-${Date.now()}-${crypto.randomBytes(6).toString('hex')}${extension}`);
     },
   }),
-  limits: { fileSize: 5 * 1024 * 1024, files: 1 },
+  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
   fileFilter(req, file, cb) {
     // false (no un Error) para que el manejador de la ruta decida el mensaje:
     // un error lanzado aquí saltaría directo al 500 genérico, saltándose el
@@ -97,7 +97,7 @@ function conFotoDeProducto(req, res, next) {
   subirImagenProducto.single('imagen')(req, res, (error) => {
     if (error instanceof multer.MulterError) {
       req.errorImagen =
-        error.code === 'LIMIT_FILE_SIZE' ? 'La imagen no puede pesar más de 5 MB.' : 'No se pudo procesar la imagen.';
+        error.code === 'LIMIT_FILE_SIZE' ? 'La imagen no puede pesar más de 10 MB.' : 'No se pudo procesar la imagen.';
     }
     next();
   });
