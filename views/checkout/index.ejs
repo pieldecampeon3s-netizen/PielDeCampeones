@@ -164,7 +164,7 @@
                 <% carrito.items.forEach(function (item) { %>
                     <li class="linea-pedido">
                         <div class="linea-imagen">
-                            <img src="<%= item.imagenUrl %>" alt="<%= item.nombreProducto %>" loading="lazy">
+                            <img src="<%= item.imagenUrl %>" alt="<%= item.nombreProducto %>" loading="lazy" onerror="this.onerror=null;this.src='/images/placeholder.png';">
                             <span class="linea-cantidad"><%= item.cantidad %></span>
                         </div>
 

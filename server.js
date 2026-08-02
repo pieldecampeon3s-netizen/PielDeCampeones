@@ -13,6 +13,8 @@ const session = require('express-session');
 const expressLayouts = require('express-ejs-layouts');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
+const fs = require('fs/promises');
+const { createClient } = require('@supabase/supabase-js');
 
 const datos = require('./src/datos');
 const db = require('./src/db');
@@ -39,6 +41,8 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(expressLayouts);
 app.set('layout', 'layouts/main');
 
+const CARPETA_IMAGENES = path.join(__dirname, 'public', 'images');
+
 app.use(express.static(path.join(__dirname, 'public'), {
   // El mime-types de esta version de Express no reconoce .avif y lo sirve
   // como application/octet-stream.
@@ -46,6 +50,23 @@ app.use(express.static(path.join(__dirname, 'public'), {
     if (filePath.endsWith('.avif')) res.setHeader('Content-Type', 'image/avif');
   },
 }));
+
+app.use('/images', (req, res, next) => {
+  const requestedFile = req.path.replace(/^\//, '');
+  const requestedPath = path.resolve(CARPETA_IMAGENES, requestedFile);
+  if (!requestedPath.startsWith(path.resolve(CARPETA_IMAGENES) + path.sep)) {
+    return res.sendFile(path.join(CARPETA_IMAGENES, 'placeholder.png'));
+  }
+
+  res.sendFile(requestedPath, (err) => {
+    if (err && (err.code === 'ENOENT' || err.statusCode === 404)) {
+      res.sendFile(path.join(CARPETA_IMAGENES, 'placeholder.png'));
+    } else if (err) {
+      next(err);
+    }
+  });
+});
+
 // Librerías servidas desde el propio servidor en lugar de un CDN externo.
 // En redes móviles donde cdn.jsdelivr.net / unpkg.com / fonts.googleapis.com
 // no son alcanzables, la página se quedaba sin Bootstrap: sin menú plegable,
@@ -71,25 +92,70 @@ app.use('/vendor/sweetalert2', libreria('sweetalert2', 'dist'));
   traer ../ o cualquier cosa): se genera aquí mismo a partir de una lista fija
   de tipos permitidos.
 */
-const CARPETA_IMAGENES = path.join(__dirname, 'public', 'images');
 const TIPOS_IMAGEN_PERMITIDOS = { 'image/jpeg': '.jpg', 'image/png': '.png', 'image/webp': '.webp' };
 
+// Usar memoryStorage evita escribir fichero localmente antes de subirlo a
+// Supabase. El buffer se maneja directamente desde `req.file.buffer`.
 const subirImagenProducto = multer({
-  storage: multer.diskStorage({
-    destination: CARPETA_IMAGENES,
-    filename(req, file, cb) {
-      const extension = TIPOS_IMAGEN_PERMITIDOS[file.mimetype];
-      cb(null, `producto-${Date.now()}-${crypto.randomBytes(6).toString('hex')}${extension}`);
-    },
-  }),
+  storage: multer.memoryStorage(),
   limits: { fileSize: 10 * 1024 * 1024, files: 1 },
   fileFilter(req, file, cb) {
-    // false (no un Error) para que el manejador de la ruta decida el mensaje:
-    // un error lanzado aquí saltaría directo al 500 genérico, saltándose el
-    // patrón de "re-renderizar con el error" que usa el resto del sitio.
     cb(null, Boolean(TIPOS_IMAGEN_PERMITIDOS[file.mimetype]));
   },
 });
+
+// Supabase client (opcional). Si no está configurado, el código sigue
+// usando las imágenes almacenadas en `public/images`.
+let supabase = null;
+const SUPABASE_BUCKET = process.env.SUPABASE_BUCKET || 'imagenes';
+if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
+  supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+}
+
+async function uploadLocalFileToSupabase(localPath, destPath, contentType) {
+  if (!supabase) throw new Error('No hay Supabase configurado');
+  const data = await fs.readFile(localPath);
+  const { error: uploadError } = await supabase.storage.from(SUPABASE_BUCKET).upload(destPath, data, {
+    contentType,
+    upsert: true,
+  });
+  if (uploadError) throw uploadError;
+  const { data: publicData } = supabase.storage.from(SUPABASE_BUCKET).getPublicUrl(destPath);
+  // getPublicUrl devuelve { publicUrl }
+  return publicData && publicData.publicUrl ? publicData.publicUrl : publicData;
+}
+
+async function uploadBufferToSupabase(buffer, destPath, contentType) {
+  if (!supabase) throw new Error('No hay Supabase configurado');
+  const { error: uploadError } = await supabase.storage.from(SUPABASE_BUCKET).upload(destPath, buffer, {
+    contentType,
+    upsert: true,
+  });
+  if (uploadError) throw uploadError;
+  const { data: publicData } = supabase.storage.from(SUPABASE_BUCKET).getPublicUrl(destPath);
+  return publicData && publicData.publicUrl ? publicData.publicUrl : publicData;
+}
+
+async function removeObjectFromSupabase(objectPath) {
+  if (!supabase) throw new Error('No hay Supabase configurado');
+  const { error } = await supabase.storage.from(SUPABASE_BUCKET).remove([objectPath]);
+  if (error) throw error;
+}
+
+async function saveLocalImage(buffer, filename) {
+  await fs.mkdir(CARPETA_IMAGENES, { recursive: true });
+  const localPath = path.join(CARPETA_IMAGENES, filename);
+  await fs.writeFile(localPath, buffer);
+  return `/images/${filename}`;
+}
+
+async function removeLocalImage(filename) {
+  try {
+    await fs.unlink(path.join(CARPETA_IMAGENES, filename));
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+}
 
 /** Envuelve la subida para que un fallo de multer (tamaño, tipo) llegue como
  *  req.errorImagen en vez de cortar la petición antes de tiempo. */
@@ -917,18 +983,42 @@ app.post('/admin/productos/crear', conFotoDeProducto, ruta(async (req, res) => {
   }
 
   try {
-    const id = await datos.crearProducto({
-      ...valores,
-      oem: valores.oem || null,
-      imagenUrl: '/images/' + req.file.filename,
-    });
+    let imagenUrl;
+    if (req.file) {
+      const ext = TIPOS_IMAGEN_PERMITIDOS[req.file.mimetype] || path.extname(req.file.originalname) || '.jpg';
+      const filename = `producto-${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
+      if (supabase) {
+        try {
+          imagenUrl = await uploadBufferToSupabase(req.file.buffer, `productos/${filename}`, req.file.mimetype);
+        } catch (err) {
+          console.error('[supabase] no se pudo subir imagen:', err.message);
+          errores.imagen = 'No se pudo subir la imagen. Intenta de nuevo.';
+        }
+      } else {
+        imagenUrl = await saveLocalImage(req.file.buffer, filename);
+      }
+    }
+
+    if (errores.imagen) {
+      return res.render('producto/crear', {
+        title: 'Crear Nuevo Producto',
+        estilos: ['/css/admin.css'],
+        scripts: ['/js/admin.js'],
+        producto: valores,
+        categorias: await datos.listarCategorias(),
+        tallasDisponibles: datos.TALLAS,
+        errores,
+      });
+    }
+
+    const id = await datos.crearProducto({ ...valores, oem: valores.oem || null, imagenUrl });
     res.redirect('/admin/productos?creado=' + id);
   } catch (error) {
     if (error.code === '23505') {
       return res.render('producto/crear', {
         title: 'Crear Nuevo Producto',
-    estilos: ['/css/admin.css'],
-    scripts: ['/js/admin.js'],
+        estilos: ['/css/admin.css'],
+        scripts: ['/js/admin.js'],
         producto: valores,
         categorias: await datos.listarCategorias(),
         tallasDisponibles: datos.TALLAS,
@@ -973,19 +1063,60 @@ app.post('/admin/productos/editar/:id', conFotoDeProducto, ruta(async (req, res,
   }
 
   try {
-    await datos.actualizarProducto(actual.id, {
-      ...valores,
-      oem: valores.oem || null,
-      // Sin foto nueva, se conserva la que ya tenía.
-      imagenUrl: req.file ? '/images/' + req.file.filename : actual.imagenUrl,
-    });
+    let imagenUrl = actual.imagenUrl;
+    if (req.file) {
+      const ext = TIPOS_IMAGEN_PERMITIDOS[req.file.mimetype] || path.extname(req.file.originalname) || '.jpg';
+      const filename = `producto-${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
+      if (supabase) {
+        let publicUrl;
+        try {
+          publicUrl = await uploadBufferToSupabase(req.file.buffer, `productos/${filename}`, req.file.mimetype);
+        } catch (err) {
+          console.error('[supabase] no se pudo subir imagen:', err.message);
+          errores.imagen = 'No se pudo subir la imagen. Intenta de nuevo.';
+        }
+
+        if (!errores.imagen) {
+          try {
+            if (actual.imagenUrl && actual.imagenUrl.includes(`/storage/v1/object/public/${SUPABASE_BUCKET}/`)) {
+              const parts = actual.imagenUrl.split(`/storage/v1/object/public/${SUPABASE_BUCKET}/`);
+              const oldPath = parts[1];
+              if (oldPath) await removeObjectFromSupabase(oldPath).catch(() => {});
+            }
+          } catch (e) {
+            console.error('[supabase] no se pudo borrar imagen anterior:', e.message);
+          }
+          imagenUrl = publicUrl;
+        }
+      } else {
+        imagenUrl = await saveLocalImage(req.file.buffer, filename);
+        if (actual.imagenUrl && actual.imagenUrl.startsWith('/images/') && actual.imagenUrl !== '/images/placeholder.png') {
+          const oldFilename = actual.imagenUrl.replace('/images/', '');
+          await removeLocalImage(oldFilename).catch(() => {});
+        }
+      }
+    }
+
+    if (errores.imagen) {
+      return res.render('producto/editar', {
+        title: 'Editar Producto',
+        estilos: ['/css/admin.css'],
+        scripts: ['/js/admin.js'],
+        producto: { ...actual, ...valores },
+        categorias: await datos.listarCategorias(),
+        tallasDisponibles: datos.TALLAS,
+        errores,
+      });
+    }
+
+    await datos.actualizarProducto(actual.id, { ...valores, oem: valores.oem || null, imagenUrl });
     res.redirect('/admin/productos?editado=' + actual.id);
   } catch (error) {
     if (error.code === '23505') {
       return res.render('producto/editar', {
         title: 'Editar Producto',
-    estilos: ['/css/admin.css'],
-    scripts: ['/js/admin.js'],
+        estilos: ['/css/admin.css'],
+        scripts: ['/js/admin.js'],
         producto: { ...actual, ...valores },
         categorias: await datos.listarCategorias(),
         tallasDisponibles: datos.TALLAS,

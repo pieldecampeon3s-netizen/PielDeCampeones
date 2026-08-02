@@ -14,7 +14,8 @@
             <img src="<%= producto.imagenUrl %>"
                  alt="<%= producto.nombre %>"
                  loading="lazy"
-                 decoding="async">
+                 decoding="async"
+                 onerror="this.onerror=null;this.src='/images/placeholder.png';">
         </a>
 
         <%# Favorito. Va fuera del enlace para que tocarlo no abra el producto. %>
