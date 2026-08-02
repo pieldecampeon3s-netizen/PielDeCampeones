@@ -35,6 +35,15 @@ function ruta(manejador) {
   return (req, res, next) => Promise.resolve(manejador(req, res, next)).catch(next);
 }
 
+/*
+  Ruta de salud para el "ping" externo que evita que Render duerma el
+  servicio por inactividad (ver cron-job.org). A propósito va lo primero de
+  todo el archivo, antes de sesión, cookies o el middleware que consulta
+  favoritos/carrito: así cada ping cada 10 minutos no toca la base de datos
+  para nada, solo confirma que el proceso sigue vivo.
+*/
+app.get('/salud', (req, res) => res.status(200).type('text').send('OK'));
+
 // --- Configuración ----------------------------------------------------------
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
@@ -172,8 +181,29 @@ function conFotoDeProducto(req, res, next) {
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+
+/*
+  El carrito vive en `req.session`, y por defecto express-session lo guarda
+  en memoria del propio proceso (MemoryStore): crece sin límite y se pierde
+  entero en cada reinicio o despliegue — cualquiera con productos en el
+  carrito lo veía vacío después de un deploy.
+
+  Ya que hay Postgres para todo lo demás, las sesiones se guardan ahí
+  también (una tabla `session` que esta librería crea sola la primera vez).
+  Sin DATABASE_URL configurada (modo demo) se cae de vuelta a MemoryStore:
+  ese modo ya acepta no tener nada persistente.
+*/
+const almacenSesion = db.hayBaseDeDatos()
+  ? new (require('connect-pg-simple')(session))({
+      pool: db.obtenerPool(),
+      tableName: 'session',
+      createTableIfMissing: true,
+    })
+  : undefined;
+
 app.use(
   session({
+    store: almacenSesion,
     secret: process.env.SESSION_SECRET || 'cambiar-en-produccion',
     resave: false,
     saveUninitialized: true,

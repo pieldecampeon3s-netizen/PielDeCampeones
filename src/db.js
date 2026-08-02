@@ -115,4 +115,4 @@ async function cerrar() {
   }
 }
 
-module.exports = { hayBaseDeDatos, consulta, unaFila, enTransaccion, probarConexion, cerrar };
+module.exports = { hayBaseDeDatos, obtenerPool, consulta, unaFila, enTransaccion, probarConexion, cerrar };
