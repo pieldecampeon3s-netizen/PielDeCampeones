@@ -13,6 +13,7 @@ const session = require('express-session');
 const expressLayouts = require('express-ejs-layouts');
 const cookieParser = require('cookie-parser');
 const multer = require('multer');
+const sharp = require('sharp');
 const fs = require('fs/promises');
 const { createClient } = require('@supabase/supabase-js');
 
@@ -164,6 +165,28 @@ async function removeLocalImage(filename) {
   } catch (error) {
     if (error.code !== 'ENOENT') throw error;
   }
+}
+
+/*
+  Redimensiona y recomprime la foto ANTES de guardarla. Una foto tomada con
+  el celular puede pesar varios MB a una resolución muchísimo más grande de
+  la que se muestra en cualquier tarjeta o ficha de producto — eso es lo que
+  hacía que las imágenes, aunque ya no se perdieran, tardaran tanto en
+  cargar: cada visita al catálogo descargaba esos varios MB por cada
+  producto. 1600px de ancho alcanza de sobra hasta para una pantalla
+  grande, y JPEG calidad 82 no se distingue a simple vista del original; en
+  la práctica el archivo queda entre 5 y 20 veces más liviano.
+
+  Siempre se guarda como JPEG (con `.rotate()` respetando la orientación
+  EXIF de la foto original), así el resto del código no necesita recordar
+  varios formatos de salida distintos.
+*/
+async function optimizarImagenProducto(buffer) {
+  return sharp(buffer)
+    .rotate()
+    .resize({ width: 1600, withoutEnlargement: true })
+    .jpeg({ quality: 82 })
+    .toBuffer();
 }
 
 /** Envuelve la subida para que un fallo de multer (tamaño, tipo) llegue como
@@ -1015,17 +1038,24 @@ app.post('/admin/productos/crear', conFotoDeProducto, ruta(async (req, res) => {
   try {
     let imagenUrl;
     if (req.file) {
-      const ext = TIPOS_IMAGEN_PERMITIDOS[req.file.mimetype] || path.extname(req.file.originalname) || '.jpg';
-      const filename = `producto-${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
-      if (supabase) {
+      const filename = `producto-${Date.now()}-${crypto.randomBytes(6).toString('hex')}.jpg`;
+      let bufferOptimizado;
+      try {
+        bufferOptimizado = await optimizarImagenProducto(req.file.buffer);
+      } catch (err) {
+        console.error('[imagen] no se pudo procesar:', err.message);
+        errores.imagen = 'Esa imagen no se pudo procesar. Intenta con otra foto.';
+      }
+
+      if (!errores.imagen && supabase) {
         try {
-          imagenUrl = await uploadBufferToSupabase(req.file.buffer, `productos/${filename}`, req.file.mimetype);
+          imagenUrl = await uploadBufferToSupabase(bufferOptimizado, `productos/${filename}`, 'image/jpeg');
         } catch (err) {
           console.error('[supabase] no se pudo subir imagen:', err.message);
           errores.imagen = 'No se pudo subir la imagen. Intenta de nuevo.';
         }
-      } else {
-        imagenUrl = await saveLocalImage(req.file.buffer, filename);
+      } else if (!errores.imagen) {
+        imagenUrl = await saveLocalImage(bufferOptimizado, filename);
       }
     }
 
@@ -1095,12 +1125,19 @@ app.post('/admin/productos/editar/:id', conFotoDeProducto, ruta(async (req, res,
   try {
     let imagenUrl = actual.imagenUrl;
     if (req.file) {
-      const ext = TIPOS_IMAGEN_PERMITIDOS[req.file.mimetype] || path.extname(req.file.originalname) || '.jpg';
-      const filename = `producto-${Date.now()}-${crypto.randomBytes(6).toString('hex')}${ext}`;
-      if (supabase) {
+      const filename = `producto-${Date.now()}-${crypto.randomBytes(6).toString('hex')}.jpg`;
+      let bufferOptimizado;
+      try {
+        bufferOptimizado = await optimizarImagenProducto(req.file.buffer);
+      } catch (err) {
+        console.error('[imagen] no se pudo procesar:', err.message);
+        errores.imagen = 'Esa imagen no se pudo procesar. Intenta con otra foto.';
+      }
+
+      if (!errores.imagen && supabase) {
         let publicUrl;
         try {
-          publicUrl = await uploadBufferToSupabase(req.file.buffer, `productos/${filename}`, req.file.mimetype);
+          publicUrl = await uploadBufferToSupabase(bufferOptimizado, `productos/${filename}`, 'image/jpeg');
         } catch (err) {
           console.error('[supabase] no se pudo subir imagen:', err.message);
           errores.imagen = 'No se pudo subir la imagen. Intenta de nuevo.';
@@ -1118,8 +1155,8 @@ app.post('/admin/productos/editar/:id', conFotoDeProducto, ruta(async (req, res,
           }
           imagenUrl = publicUrl;
         }
-      } else {
-        imagenUrl = await saveLocalImage(req.file.buffer, filename);
+      } else if (!errores.imagen) {
+        imagenUrl = await saveLocalImage(bufferOptimizado, filename);
         if (actual.imagenUrl && actual.imagenUrl.startsWith('/images/') && actual.imagenUrl !== '/images/placeholder.png') {
           const oldFilename = actual.imagenUrl.replace('/images/', '');
           await removeLocalImage(oldFilename).catch(() => {});
