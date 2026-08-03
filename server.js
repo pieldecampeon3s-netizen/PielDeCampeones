@@ -114,13 +114,34 @@ const subirImagenProducto = multer({
   },
 });
 
-// Supabase client (opcional). Si no está configurado, el código sigue
-// usando las imágenes almacenadas en `public/images`.
+/*
+  Cliente de Supabase (opcional). Si no está configurado, el código cae de
+  vuelta a guardar las fotos en `public/images` — que en Render es disco
+  efímero, se borra en cada reinicio o despliegue. Por eso, si esto queda
+  en `false` en un entorno como Render sin que se note, las fotos "se
+  guardan" pero desaparecen solas más tarde: el mismo síntoma de antes,
+  pero con una causa distinta y más difícil de ver.
+
+  Se acepta tanto SUPABASE_KEY como SUPABASE_SERVICE_ROLE_KEY (el nombre
+  "oficial" que trae el propio .env de este proyecto) para no depender de
+  que el nombre exacto de la variable coincida entre el entorno local y el
+  de Render — ahí se configuran aparte, a mano, y es fácil que se quede
+  puesta con un nombre distinto al que el código esperaba.
+*/
 let supabase = null;
 const SUPABASE_BUCKET = process.env.SUPABASE_BUCKET || 'imagenes';
-if (process.env.SUPABASE_URL && process.env.SUPABASE_KEY) {
-  supabase = createClient(process.env.SUPABASE_URL, process.env.SUPABASE_KEY);
+const SUPABASE_KEY_SERVIDOR = process.env.SUPABASE_KEY || process.env.SUPABASE_SERVICE_ROLE_KEY;
+if (process.env.SUPABASE_URL && SUPABASE_KEY_SERVIDOR) {
+  supabase = createClient(process.env.SUPABASE_URL, SUPABASE_KEY_SERVIDOR);
 }
+
+// Sin este aviso, un despliegue sin la variable configurada falla en
+// silencio: las fotos parecen guardarse bien y desaparecen días después.
+console.log(
+  supabase
+    ? `[imagenes] Supabase Storage activo (bucket "${SUPABASE_BUCKET}") — las fotos son persistentes.`
+    : '[imagenes] Supabase Storage NO configurado — las fotos se están guardando en disco local, que en Render se borra en cada reinicio o despliegue. Revisa SUPABASE_URL y SUPABASE_KEY/SUPABASE_SERVICE_ROLE_KEY en las variables de entorno.'
+);
 
 async function uploadLocalFileToSupabase(localPath, destPath, contentType) {
   if (!supabase) throw new Error('No hay Supabase configurado');
